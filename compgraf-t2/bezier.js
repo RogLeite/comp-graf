@@ -24,25 +24,29 @@ function onMouseMove(evt){
 
 function redraw(){
 	ctx.clearRect(0,0,canvas.width,canvas.height);
-	/*
-	ctx.strokeStyle = "#FF0000";
-	ctx.lineWidth = 3;
-	ctx.lineJoin  = "round";
-	ctx.beginPath();
-	 */
-
 	ctx.fillStyle = "#0000FF";
-	ctx.lineWidth = 3;
 	for(let i=0;i<pickedPoints.length;i++){
 		let pick = pickedPoints[i];
 		let next = pickedPoints[i+1];
-		
-		ctx.beginPath();
-		ctx.arc(pick.x,pick.y,6,0,Math.PI*2,true);
-		ctx.fill();
 		if(next){
-				
+			drawLine(pick,next);
 		}
+		drawPoint(pick);
 	}
 
+}
+
+function drawLine(start,end){
+	ctx.strokeStyle = "#FF0000";
+	ctx.lineWidth = 2;
+	ctx.lineJoin  = "round";
+	ctx.beginPath();
+	ctx.moveTo(start.x, start.y);
+	ctx.lineTo(end.x,end.y);
+	ctx.stroke();
+}
+function drawPoint(point){
+	ctx.beginPath();
+	ctx.arc(point.x,point.y,6,0,Math.PI*2,true);
+	ctx.fill();
 }
