@@ -3,7 +3,6 @@ var ctx = canvas.getContext("2d");
 var pickedPoints = [];
 function getPoint(evt){
 	let ret = canvas.getBoundingClientRect();
-
 	return {
 		x: evt.clientX-ret.x,
 		y: evt.clientY-ret.y
