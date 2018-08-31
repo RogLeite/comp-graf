@@ -1,7 +1,10 @@
 var canvas =document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var activeImg;
-
+var r = 0;
+var g = 1;
+var b = 2;
+var a = 3;
 var lumOperator = function (imgData){
     alert("Lum operator");
     return imgData;
@@ -35,7 +38,7 @@ function drawActive(){
 
 //In case activeImg is ImageData
 function putActive(){
-    ctx.putImageData(activeImg,0,0,canvas.clientWidth,canvas.clientHeight);
+    ctx.putImageData(activeImg,0,0/*,canvas.clientWidth,canvas.clientHeight*/);
 }
 
 function getData(){
@@ -49,11 +52,23 @@ function setActive(img){
 
 function buttonPushed(filter){
     let data = getData();
-    let img = applyFilter(data);
+    let img = filter(data);
     setActive(img);
     putActive();
 }
 
-function applyFilter(data,filter){
-    return filter(data);
+function getPixel(imgData,x,y){
+    let pixel = [];
+    for (let i = 0; i < 4; i++) {
+        pixel.push(imgData.data[i + convertX(x,imgData) + convertY(y,imgData)]);
+    }
+    return pixel;
+}
+
+function convertX(x,imgData){
+    return x*imgData.width*4;
+}
+
+function convertY(y,imgData){
+    return y*4;
 }
