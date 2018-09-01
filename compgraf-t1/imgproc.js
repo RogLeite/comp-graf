@@ -13,21 +13,39 @@ var lum = function(pixel){
 
 var lumOperator = function (imgData){
     let newData = ctx.createImageData(imgData);
+    let padding = 0;
     forEachPixel(imgData,
         function (imgData,x,y){
             let old = getPixel(imgData,x,y);
             let L = lum(old);
             setPixel(newData,x,y,[L,L,L,old[a]]);
-        });
+        },
+        padding
+    );
     //alert("Lum operator");
     return newData;
 };
 
-//gaussian matrix 3x3
-var gM3x3 = [];
 var gaussianFilter = function (imgData){
+
+    //gaussian matrix 3x3
+    let cst = 1/16;
+    let gM3x3 =[
+        [cst*1,cst*2,cst*1],
+        [cst*2,cst*4,cst*2],
+        [cst*1,cst*2,cst*1]
+    ];
+    let padding3x3 = 1;
+    
     let newData = ctx.createImageData(imgData);
    
+    forEachPixel(imgData,
+        function(imgData,x,y){
+            
+        },
+        padding3x3
+    );
+
     alert("gaussian filter");
     return newData;
 };
