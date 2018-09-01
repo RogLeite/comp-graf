@@ -5,24 +5,30 @@ var r = 0;
 var g = 1;
 var b = 2;
 var a = 3;
+
+
 var lumOperator = function (imgData){
+    let newData = ctx.createImageData(imgData);
+    for (let x = 0; x < imgData.width; x++) {
+        for (let y = 0; y < imgData.height; y++) {
+            setPixel(newData,x,y,getPixel(imgData,x,y));
+        }
+    }
     alert("Lum operator");
-    return imgData;
-}
-
-
+    return newData;
+};
 
 var gaussianFilter = function (imgData){
     alert("gaussian filter");
     return imgData;
-}
-
+};
 
 
 function onShowImage(img){
     setActive(img);
     drawActive();
 }
+
 
 function firstButton(){
     buttonPushed(lumOperator);
@@ -63,6 +69,12 @@ function getPixel(imgData,x,y){
         pixel.push(imgData.data[i + convertX(x,imgData) + convertY(y,imgData)]);
     }
     return pixel;
+}
+
+function setPixel(imgData,x,y,pixel){
+    for (let i = 0; i < 4; i++) {
+        imgData.data[i + convertX(x,imgData) + convertY(y,imgData)] = pixel[i];
+    }
 }
 
 function convertX(x,imgData){
