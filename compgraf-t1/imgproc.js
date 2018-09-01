@@ -7,20 +7,29 @@ var b = 2;
 var a = 3;
 
 
+var lum = function(pixel){
+    return 0.3*pixel[r]+0.59*pixel[g]+0.11*pixel[b];
+};
+
 var lumOperator = function (imgData){
     let newData = ctx.createImageData(imgData);
-    for (let x = 0; x < imgData.width; x++) {
-        for (let y = 0; y < imgData.height; y++) {
-            setPixel(newData,x,y,getPixel(imgData,x,y));
-        }
-    }
-    alert("Lum operator");
+    forEachPixel(imgData,
+        function (imgData,x,y){
+            let old = getPixel(imgData,x,y);
+            let L = lum(old);
+            setPixel(newData,x,y,[L,L,L,old[a]]);
+        });
+    //alert("Lum operator");
     return newData;
 };
 
+//gaussian matrix 3x3
+var gM3x3 = [];
 var gaussianFilter = function (imgData){
+    let newData = ctx.createImageData(imgData);
+   
     alert("gaussian filter");
-    return imgData;
+    return newData;
 };
 
 
@@ -44,7 +53,7 @@ function drawActive(){
 
 //In case activeImg is ImageData
 function putActive(){
-    ctx.putImageData(activeImg,0,0/*,canvas.clientWidth,canvas.clientHeight*/);
+    ctx.putImageData(activeImg,0,0,0,0,canvas.clientWidth,canvas.clientHeight);
 }
 
 function getData(){
@@ -63,6 +72,9 @@ function buttonPushed(filter){
     putActive();
 }
 
+
+//Pixel operations+++++++++++++++++++++++++++++++++++++++++++++++++
+
 function getPixel(imgData,x,y){
     let pixel = [];
     for (let i = 0; i < 4; i++) {
@@ -78,9 +90,22 @@ function setPixel(imgData,x,y,pixel){
 }
 
 function convertX(x,imgData){
-    return x*imgData.width*4;
+    return x*4;
 }
 
 function convertY(y,imgData){
-    return y*4;
+    return y*imgData.width*4;
 }
+function forEachPixel(imgData,apply,padding){
+    let pad = 0;
+    if (padding) {
+        pad = padding;
+    }
+    for (let x = 0+pad; x < imgData.width-pad; x++) {
+        for (let y = 0+pad; y < imgData.height-pad; y++) {
+            apply(imgData,x,y);
+        }
+    }
+}
+
+//--------------------------------------------------------
