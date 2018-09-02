@@ -5,7 +5,7 @@ var r = 0;
 var g = 1;
 var b = 2;
 var a = 3;
-var qtdParColor = 3;
+var qtdParColor = a;
 
 var lum = function(pixel){
     return 0.3*pixel[r]+0.59*pixel[g]+0.11*pixel[b];
@@ -35,6 +35,14 @@ var gaussianFilter = function (imgData){
         [cst*2,cst*4,cst*2],
         [cst*1,cst*2,cst*1]
     ];
+    let total = 0;
+    for(let i = 0;i<3;i++){
+        for(let j=0;j<3;j++){
+            total+=gM3x3[i][j];
+        }
+    }
+    alert(total);
+
     let padding3x3 = 1;
     
     let newData = ctx.createImageData(imgData);
@@ -43,6 +51,9 @@ var gaussianFilter = function (imgData){
         function(x,y){
             let reference = getPxMatrix(imgData,x,y,padding3x3);
             let newPx = getModPixel(reference,gM3x3);
+            if (newPx === null){
+                alert("newPx null");
+            }
             setPixel(newData,x,y,newPx);
         },
         padding3x3
@@ -92,13 +103,13 @@ function buttonPushed(filter){
     putActive();
 }
 
-
-function getPxMatrix(imgData,x,y,radius){
+//Pixel Matrix Operations++++++++++++++++++++++++++++++
+function getPxMatrix(iData,x,y,radius){
     let newMatrix = [];
     for(let j = y-radius;j<y+radius;j++){
         let newArray = [];
         for (let i = x-radius; i < x+radius; i++) {
-            newArray.push(getPixel(imgData,i,j));
+            newArray.push(getPixel(iData,i,j));
         }
         newMatrix.push(newArray);
     }
@@ -118,9 +129,10 @@ function multFilter(ref,filter){4
         for(let j = 0;j<ref[i].length;j++){
             let newPx = [];
             for(let color = 0;color<qtdParColor;color++){
-                newPx.push(ref[i][j][color]*filter[i][j]);
+                newPx.push(Math.floor(ref[i][j][color]*filter[i][j]));//[[todo]]
             }
-            newArray.push(newPx);
+            newPx.push(ref[i][j][a]);
+            newArray.push(newPx);  
         }
         newMatrix.push(newArray);
     }
@@ -136,8 +148,10 @@ function sumPxMatrix(matrix){
             }
         }
     }
+    newPx[a] = matrix[matrix.length/2][matrix[0].length/2][a];
     return newPx;
 }
+//---------------------------------------------------------------
 
 //Pixel operations+++++++++++++++++++++++++++++++++++++++++++++++++
 function getPixel(imgData,x,y){
