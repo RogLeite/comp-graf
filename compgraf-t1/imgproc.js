@@ -129,7 +129,7 @@ function multFilter(ref,filter){4
         for(let j = 0;j<ref[i].length;j++){
             let newPx = [];
             for(let color = 0;color<qtdParColor;color++){
-                newPx.push(Math.floor(ref[i][j][color]*filter[i][j]));//[[todo]]
+                newPx.push(Math.ceil(ref[i][j][color]*filter[i][j]));//[[todo]]
             }
             newPx.push(ref[i][j][a]);
             newArray.push(newPx);  
