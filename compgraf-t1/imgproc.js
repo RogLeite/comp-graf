@@ -50,6 +50,7 @@ var gaussianFilter = function (imgData){
     forEachPixel(imgData,
         function(x,y){
             let reference = getPxMatrix(imgData,x,y,padding3x3);
+            //alert(reference);
             let newPx = getModPixel(reference,gM3x3);
             if (newPx === null){
                 alert("newPx null");
@@ -106,36 +107,54 @@ function buttonPushed(filter){
 //Pixel Matrix Operations++++++++++++++++++++++++++++++
 function getPxMatrix(iData,x,y,radius){
     let newMatrix = [];
-    for(let j = y-radius;j<y+radius;j++){
+    for(let j = y-radius;j<=y+radius;j++){
         let newArray = [];
-        for (let i = x-radius; i < x+radius; i++) {
+        for (let i = x-radius; i <= x+radius; i++) {
             newArray.push(getPixel(iData,i,j));
         }
+        //alert("newArray "+newArray);
         newMatrix.push(newArray);
+
+        //alert("newMatrix "+newMatrix);
     }
+    //alert(newMatrix);
     return newMatrix;
 }
 
 function getModPixel(ref,filter) {
     let weightedMatrix = multFilter(ref,filter);
+    
+    /* 
+    let total = [0,0,0];
+    for(let i = 0;i<weightedMatrix.length;i++){
+        for(let j=0;j<weightedMatrix[i].length;j++){
+            for(let color=0;color<qtdParColor;color++){
+                total[color]+=weightedMatrix[i][j][color];
+            }
+        }
+    }
+    alert(total+" || "+ref); */
     let px = sumPxMatrix(weightedMatrix);
+    //alert(px);
     return px;
 }
 
 function multFilter(ref,filter){4
     let newMatrix = [];
-    for (let i = 0; i < ref.length; i++) {
+    for (let i = 0; i < filter.length; i++) {
         let newArray = [];
-        for(let j = 0;j<ref[i].length;j++){
+        for(let j = 0;j<filter[i].length;j++){
             let newPx = [];
             for(let color = 0;color<qtdParColor;color++){
                 newPx.push(Math.ceil(ref[i][j][color]*filter[i][j]));//[[todo]]
             }
             newPx.push(ref[i][j][a]);
+            //alert("newPx "+newPx);
             newArray.push(newPx);  
         }
         newMatrix.push(newArray);
     }
+    //alert("newMatrix "+newMatrix);
     return newMatrix;
 }
 
@@ -148,7 +167,7 @@ function sumPxMatrix(matrix){
             }
         }
     }
-    newPx[a] = matrix[matrix.length/2][matrix[0].length/2][a];
+    newPx[a] = matrix[Math.floor(matrix.length/2)][Math.floor(matrix[0].length/2)][a];
     return newPx;
 }
 //---------------------------------------------------------------
