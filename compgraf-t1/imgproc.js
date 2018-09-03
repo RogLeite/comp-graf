@@ -41,7 +41,7 @@ var gaussianFilter = function (imgData){
             total+=gM3x3[i][j];
         }
     }
-    alert(total);
+    //alert(total);
 
     let padding3x3 = 1;
     
