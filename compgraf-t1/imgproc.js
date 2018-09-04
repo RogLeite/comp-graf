@@ -7,24 +7,37 @@ var b = 2;
 var a = 3;
 var qtdParColor = a;
 
-var lum = function(pixel){
-    return 0.3*pixel[r]+0.59*pixel[g]+0.11*pixel[b];
+var colorSpaceTransform = function(x,y,imgData,newData,operator){
+    let oldPx = getPixel(imgData,x,y);
+    let newPx = operator(oldPx);
+    setPixel(newData,x,y,newPx);
 };
 
+var maskedFilterTransform = function(x,y,imgData,newData,mask,padding){
+    let reference = getPxMatrix(imgData,x,y,padding);
+    let newPx = getModPixel(reference,mask);
+    setPixel(newData,x,y,newPx);
+};
+
+var lum = function(pixel){
+    let L = 0.3*pixel[r]+0.59*pixel[g]+0.11*pixel[b];
+    return [L,L,L,pixel[a]];
+};
 var lumOperator = function (imgData){
     let newData = ctx.createImageData(imgData);
     let padding = 0;
     forEachPixel(imgData,
         function (x,y){
-            let old = getPixel(imgData,x,y);
-            let L = lum(old);
-            setPixel(newData,x,y,[L,L,L,old[a]]);
+            colorSpaceTransform(x,y,imgData,newData,lum);
         },
         padding
     );
     //alert("Lum operator");
     return newData;
 };
+
+
+
 
 var gaussianFilter = function (imgData){
 
@@ -35,13 +48,6 @@ var gaussianFilter = function (imgData){
         [cst*2,cst*4,cst*2],
         [cst*1,cst*2,cst*1]
     ];
-    let total = 0;
-    for(let i = 0;i<3;i++){
-        for(let j=0;j<3;j++){
-            total+=gM3x3[i][j];
-        }
-    }
-    //alert(total);
 
     let padding3x3 = 1;
     
@@ -49,13 +55,7 @@ var gaussianFilter = function (imgData){
    
     forEachPixel(imgData,
         function(x,y){
-            let reference = getPxMatrix(imgData,x,y,padding3x3);
-            //alert(reference);
-            let newPx = getModPixel(reference,gM3x3);
-            if (newPx === null){
-                alert("newPx null");
-            }
-            setPixel(newData,x,y,newPx);
+            maskedFilterTransform(x,y,imgData,newData,gM3x3,padding3x3);
         },
         padding3x3
     );
@@ -64,6 +64,57 @@ var gaussianFilter = function (imgData){
     return newData;
 };
 
+
+var edgeDetection = function (imgData){
+
+    //sobel edge detection matrix 3x3
+    let sobel3x3 =[
+        [0,-1,0],
+        [-1,4,-1],
+        [0,-1,0]
+    ];
+    let padding3x3 = 1;
+    
+    let newData = ctx.createImageData(imgData);
+   
+    forEachPixel(imgData,
+        function(x,y){
+            maskedFilterTransform(x,y,imgData,newData,sobel3x3,padding3x3);
+        },
+        padding3x3
+    );
+
+    //alert("gaussian filter");
+    return newData;
+}
+
+var gaussianFilter5x5 = function (imgData){
+
+    //gaussian matrix 5x5
+    let cst = 1/273;
+    let gM5x5 =[
+        [cst*1,cst*4,cst*7,cst*4,cst*1],
+        [cst*4,cst*16,cst*26,cst*16,cst*4],
+        [cst*7,cst*26,cst*41,cst*26,cst*7],
+        [cst*4,cst*16,cst*26,cst*16,cst*4],
+        [cst*1,cst*4,cst*7,cst*4,cst*1]
+    ];
+    //alert(total);
+
+    let padding5x5 = 2;
+    
+    let newData = ctx.createImageData(imgData);
+   
+    forEachPixel(imgData,
+        function(x,y){
+            maskedFilterTransform(x,y,imgData,newData,gM5x5,padding5x5);
+        },
+        padding5x5
+    );
+
+    //alert("gaussian filter");
+    return newData;
+};
 
 function onShowImage(img){
     setActive(img);
@@ -77,7 +128,13 @@ function firstButton(){
 function secondButton(){
     buttonPushed(gaussianFilter);
 }
+function thirdButton(){
+    buttonPushed(edgeDetection);
+}
 
+function fourthButton(){
+    buttonPushed(gaussianFilter5x5);
+}
 //in case activeImg is img object
 function drawActive(){
     ctx.drawImage(activeImg,0,0,canvas.clientWidth,canvas.clientHeight);
