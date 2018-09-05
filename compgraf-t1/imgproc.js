@@ -7,6 +7,9 @@ var b = 2;
 var a = 3;
 var qtdParColor = a;
 
+//gamma value
+var g = 1/1.1;
+
 var colorSpaceTransform = function(x,y,imgData,newData,operator){
     let oldPx = getPixel(imgData,x,y);
     let newPx = operator(oldPx);
@@ -116,6 +119,29 @@ var gaussianFilter5x5 = function (imgData){
     return newData;
 };
 
+
+var gamma = function(pixel){
+    let newPx = [];
+    for (let i=0;i<qtdParColor;i++){
+        newPx.push(Math.pow(pixel[i],g));
+    }
+    newPx.push(pixel[a]);
+    return newPx;
+};
+
+var gammaCorrection = function(imgData){
+    let newData = ctx.createImageData(imgData);
+    let padding = 0;
+    forEachPixel(imgData,
+        function (x,y){
+            colorSpaceTransform(x,y,imgData,newData,gamma);
+        },
+        padding
+    );
+    //alert("gamma operator");
+    return newData;
+};
+
 function onShowImage(img){
     setActive(img);
     drawActive();
@@ -134,6 +160,9 @@ function thirdButton(){
 
 function fourthButton(){
     buttonPushed(gaussianFilter5x5);
+}
+function fifthButton(){
+    buttonPushed(gammaCorrection);
 }
 //in case activeImg is img object
 function drawActive(){
