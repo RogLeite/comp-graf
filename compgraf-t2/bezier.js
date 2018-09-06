@@ -1,6 +1,43 @@
 var canvas =document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var pickedPoints = [];
+
+function interpolatePoints(){
+	if (pickedPoints.length <=1){
+		//donothing
+	}
+	else if(pickedPoints.length===2){
+		//define primeiras derivadas
+		let p1 = pickedPoints[0], p2 = pickedPoints[1];
+		p1.setR(calcSlope(p1,p2),calcModule(p1,p2));
+	}
+	else {
+		//define derivadas normalmente
+	}
+
+}
+function calcSlope(p1,p2){
+	return ((p2.y-p1.y)/(p2.x-p1.x));
+}
+
+
+function pickPoint(point){
+	let fullPoint = {
+		x:point.x,
+		y:point.y,
+		l:0,
+		r:0,
+		setR : function(slope,mod){
+			this.r = R;//[[TODO]] construir pontos para usar como r e l
+		},
+		setL : function(L){
+			this.l = L;
+		}
+	};
+	pickedPoints.push(fullPoint);
+	interpolatePoints();
+}
+
 function getPoint(evt){
 	let ret = canvas.getBoundingClientRect();
 	return {
@@ -9,7 +46,7 @@ function getPoint(evt){
 	};
 }
 function onMouseUp(evt){
-	pickedPoints.push( getPoint(evt));
+	pickPoint( getPoint(evt));
 	redraw();
 }
 

@@ -18,7 +18,7 @@ function setGVal(){
 var colorSpaceTransform = function(x,y,imgData,newData,operator){
     let oldPx = getPixel(imgData,x,y);
     let newPx = operator(oldPx);
-    alert("oldPixel = "+oldPx+"\nnewPixel = "+newPx);
+    //alert("oldPixel = "+oldPx+"\nnewPixel = "+newPx);
     setPixel(newData,x,y,newPx);
 };
 
