@@ -1,4 +1,5 @@
 var canvas =document.getElementById("canvas");
+var gbox = document.getElementById("gamma-value");
 var ctx = canvas.getContext("2d");
 var activeImg;
 var r = 0;
@@ -8,11 +9,16 @@ var a = 3;
 var qtdParColor = a;
 
 //gamma value
-var g = 1/1.1;
+var gval = 1.1;
+
+function setGVal(){
+    gval = gbox.value;
+}
 
 var colorSpaceTransform = function(x,y,imgData,newData,operator){
     let oldPx = getPixel(imgData,x,y);
     let newPx = operator(oldPx);
+    alert("oldPixel = "+oldPx+"\nnewPixel = "+newPx);
     setPixel(newData,x,y,newPx);
 };
 
@@ -23,6 +29,7 @@ var maskedFilterTransform = function(x,y,imgData,newData,mask,padding){
 };
 
 var lum = function(pixel){
+    //alert("pixel = "+pixel);
     let L = 0.3*pixel[r]+0.59*pixel[g]+0.11*pixel[b];
     return [L,L,L,pixel[a]];
 };
@@ -123,7 +130,7 @@ var gaussianFilter5x5 = function (imgData){
 var gamma = function(pixel){
     let newPx = [];
     for (let i=0;i<qtdParColor;i++){
-        newPx.push(Math.pow(pixel[i],g));
+        newPx.push(Math.pow(pixel[i],1/gval));
     }
     newPx.push(pixel[a]);
     return newPx;
@@ -132,6 +139,7 @@ var gamma = function(pixel){
 var gammaCorrection = function(imgData){
     let newData = ctx.createImageData(imgData);
     let padding = 0;
+    setGVal();
     forEachPixel(imgData,
         function (x,y){
             colorSpaceTransform(x,y,imgData,newData,gamma);
