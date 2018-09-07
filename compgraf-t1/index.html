@@ -13,13 +13,23 @@
         <button onclick="thirdButton(event)">Sobel</button>
         <button onclick="fourthButton(event)">Gauss5x5</button>
         <button onclick="fifthButton(event)">Gamma</button>
-        <input type="number" required name="price" id="gamma-value" min="0" value="1.1" step="0.01" >
+        <input type="number" alt="gamma-value" required name="price" id="gamma-value" min="0" value="1.1" step="0.01" >
+        <button onclick="sixthButton(event)">Median</button>
+        <input type="number" alt="median-radius" required name="price" id="median-radius" min="1" max="2" value="1" step="1" >
+        <button onclick="seventhButton(event)">Negative</button>
     </div>
 
     <canvas id="canvas" style="background:black" width="800" height="600" ></canvas>
     <div>
         <img src="./img/rosa-azul.jpeg" onclick = "onShowImage(this)" height="100" width="100" alt="">
         <img src="./img/waves.jpeg" onclick = "onShowImage(this)" height="100" width="100" alt="">
+        <img src="./img/saltandpepper.jpg" onclick = "onShowImage(this)" height="100" width="100" alt="">
+        <img src="./img/saltandpepper2.jpg" onclick = "onShowImage(this)" height="100" width="100" alt="">
+        <img src="./img/img-1.jpg" onclick = "onShowImage(this)" height="100" width="100" alt="">
+        <img src="./img/img-2.jpg" onclick = "onShowImage(this)" height="100" width="100" alt="">
+        <img src="./img/img-3.jpg" onclick = "onShowImage(this)" height="100" width="100" alt="">
+        <img src="./img/img-4.jpg" onclick = "onShowImage(this)" height="100" width="100" alt="">
+        <img src="./img/img-5.jpg" onclick = "onShowImage(this)" height="100" width="100" alt="">
     </div>
     <script src="imgproc.js"></script>
 </body>

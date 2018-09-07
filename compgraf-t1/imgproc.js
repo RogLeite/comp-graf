@@ -1,5 +1,6 @@
 var canvas =document.getElementById("canvas");
 var gbox = document.getElementById("gamma-value");
+var mbox = document.getElementById("median-radius");
 var ctx = canvas.getContext("2d");
 var activeImg;
 var r = 0;
@@ -11,8 +12,18 @@ var qtdParColor = a;
 //gamma value
 var gval = 1.1;
 
+var medianRadius = 1;
+
 function setGVal(){
     gval = gbox.value;
+}
+
+function setMedianRadius(){
+    if (mbox.value === 1){
+        medianRadius = 1;
+    }else if(mbox.value === 2){
+        medianRadius = 2;
+    }
 }
 
 var colorSpaceTransform = function(x,y,imgData,newData,operator){
@@ -27,6 +38,52 @@ var maskedFilterTransform = function(x,y,imgData,newData,mask,padding){
     let newPx = getModPixel(reference,mask);
     setPixel(newData,x,y,newPx);
 };
+
+var medianFilterTransform = function(x,y,imgData,newData,radius){
+    let reference = getPxMatrix(imgData,x,y,radius);
+    //alert("reference = "+reference);
+    let newPx = getMedianPx(reference);
+    setPixel(newData,x,y,newPx);
+};
+
+var medianFilter = function (imgData){
+    let newData = ctx.createImageData(imgData);
+    setMedianRadius();
+    //alert("median radius = "+medianRadius);
+    let padding = 0;
+    forEachPixel(imgData,
+        function (x,y){
+            medianFilterTransform(x,y,imgData,newData,medianRadius);
+        },
+        padding
+    );
+    //alert("Lum operator");
+    return newData;
+};
+
+
+var neg = function(pixel){
+    //alert("pixel = "+pixel);
+    let newPx = [];
+    for(let i=0; i<qtdParColor;i++){
+        newPx.push((255-pixel[i]));
+    }
+    newPx.push(pixel[a]);
+    return newPx;
+};
+var negativeOperator = function (imgData){
+    let newData = ctx.createImageData(imgData);
+    let padding = 0;
+    forEachPixel(imgData,
+        function (x,y){
+            colorSpaceTransform(x,y,imgData,newData,neg);
+        },
+        padding
+    );
+    //alert("Lum operator");
+    return newData;
+};
+
 
 var lum = function(pixel){
     //alert("pixel = "+pixel);
@@ -172,6 +229,14 @@ function fourthButton(){
 function fifthButton(){
     buttonPushed(gammaCorrection);
 }
+
+function sixthButton(){
+    buttonPushed(medianFilter);
+}
+function seventhButton(){
+    buttonPushed(negativeOperator);
+}
+
 //in case activeImg is img object
 function drawActive(){
     ctx.drawImage(activeImg,0,0,canvas.clientWidth,canvas.clientHeight);
@@ -199,6 +264,40 @@ function buttonPushed(filter){
 }
 
 //Pixel Matrix Operations++++++++++++++++++++++++++++++
+function getMedianPx(pxMatrix){
+    //alert("pxMatrix = "+pxMatrix);
+    let pxArray = turnArray(pxMatrix);
+    //alert("pxArray = "+pxArray+"\n.length = "+pxArray.length);
+    let middle = Math.floor(pxArray.length/2);
+    //alert("middle = "+middle);
+    let median = [];
+    for(let i=0;i<qtdParColor;i++){
+        sortPxs(pxArray,i);
+        median.push(pxArray[middle][i]);
+    }
+    median.push(255);
+    return median;
+}
+
+function turnArray(m) {
+    let a = [];
+    //alert("m.length = "+m.length);
+    for(let i=0;i<m.length;i++){
+       // alert("m[i].length = "+m[i].length);
+        for(let j=0;j<m[i].length;j++){
+            a.push(m[i][j]);
+            //alert("a = "+a+"\nm[i][j] = "+m[i][j]);
+        }
+    }
+    return a;
+}
+
+function sortPxs(pxArray,color){
+    pxArray.sort(function(a,b){
+        return (a[color]-b[color]);
+    });
+}
+
 function getPxMatrix(iData,x,y,radius){
     let newMatrix = [];
     for(let j = y-radius;j<=y+radius;j++){
