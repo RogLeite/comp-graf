@@ -6,13 +6,13 @@ var pickedPoints = [];
 
 
 function pickPoint(point){
-	if(pickedPoints.length===1){
+	/*if(pickedPoints.length===1){
 		pickedPoints[0].interpolateTo(point);
 	}else if(pickedPoints.length===2){
 		pickedPoints[0].interpolateBetween(pickedPoints[1],point);
 	}else if(pickedPoints.length>2){
 		pickedPoints[pickedPoints.length-1].interpolateNew(point);
-	}
+	}*/
 	pickedPoints.push(point);
 }
 
@@ -37,13 +37,16 @@ function onMouseMove(evt){
 function redraw(){
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.fillStyle = "#0000FF";
-	for(let i=0;i<pickedPoints.length;i++){
-		let pick = pickedPoints[i];
-		let next = pickedPoints[i+1];
-		if(next){
-			drawLine(pick,next);
-		}
-		drawPoint(pick);
+	let ultimo = pickedPoints.length-1;
+	let next = pickedPoints[ultimo];
+
+	if(pickedPoints.length>1){
+		let penultimo = pickedPoints.length-2;
+		let pick = pickedPoints[penultimo];
+		drawLine(pick,next);
+	}
+	for (let i=0;i<pickedPoints.length;i++){
+		drawPoint(pickedPoints[i]);
 	}
 
 }
@@ -81,7 +84,7 @@ var prot_Point = {
 	slopeTo : function(pt){
 		return calcSlope(this,pt);
 	},
-	moveTo: function(x,y){
+	moveTo:function(x,y){
 		this.x = x;
 		this.y = y;
 	}
@@ -100,7 +103,7 @@ var prot_fullPoint = {
 		pt.l.moveTo(2/3*(pt.x-this.x),2/3*(pt.y-this.y));
 	},
 	interpolateBetween:function(pt1,pt2){
-		
+
 	},
 	interpolateNew:function(pt){
 
