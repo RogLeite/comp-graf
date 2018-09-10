@@ -6,14 +6,31 @@ var pickedPoints = [];
 
 
 function pickPoint(point){
-	/*if(pickedPoints.length===1){
+	let mouse;
+	//retira ponto do mouse
+	if(pickedPoints.length!==0){
+		mouse = pickedPoints.pop();
+	}
+
+	if(pickedPoints.length===1){
 		pickedPoints[0].interpolateTo(point);
-	}else if(pickedPoints.length===2){
+	}/*else if(pickedPoints.length===2){
 		pickedPoints[0].interpolateBetween(pickedPoints[1],point);
 	}else if(pickedPoints.length>2){
 		pickedPoints[pickedPoints.length-1].interpolateNew(point);
 	}*/
+	//só para ver se estão sendo desenhados+++
+	/*
+	point.l.moveBy(-3,0);
+	point.r.moveBy(3,0);
+	*/
+	//-----------------------------------------
 	pickedPoints.push(point);
+
+	//devolve ponto do mouse
+	if(pickedPoints.length!==0){
+		pickedPoints.push(mouse);
+	}
 }
 
 function getPoint(evt){
@@ -47,6 +64,12 @@ function redraw(){
 	}
 	for (let i=0;i<pickedPoints.length;i++){
 		drawPoint(pickedPoints[i]);
+		if(pickedPoints[i].r){
+			drawPoint(pickedPoints[i].r,2,"#00FF00");
+		}
+		if(pickedPoints[i].l){
+			drawPoint(pickedPoints[i].l,2,"#00FF00");
+		}
 	}
 
 }
@@ -60,9 +83,18 @@ function drawLine(start,end){
 	ctx.lineTo(end.x,end.y);
 	ctx.stroke();
 }
-function drawPoint(point){
+function drawPoint(point,radius,color){
 	ctx.beginPath();
-	ctx.arc(point.x,point.y,6,0,Math.PI*2,true);
+	let rad = radius;
+	let cor = color;
+	if(!cor){
+		cor = "#0000FF";
+	}
+	if(!rad){
+		rad = 6;
+	}
+	ctx.fillStyle = cor;
+	ctx.arc(point.x,point.y,rad,0,Math.PI*2,true);
 	ctx.fill();
 }
 
@@ -87,6 +119,10 @@ var prot_Point = {
 	moveTo:function(x,y){
 		this.x = x;
 		this.y = y;
+	},
+	moveBy:function(dx,dy){
+		this.x+=dx;
+		this.y+=dy;
 	}
 };
 
@@ -96,11 +132,13 @@ var prot_fullPoint = {
 	distanceTo:prot_Point.distanceTo,
 	slopeTo:prot_Point.slopeTo,
 	moveTo:prot_Point.moveTo,
+	moveBy:prot_Point.moveBy,
 	l: new class_Point(this.x,this.y),
 	r: new class_Point(this.x,this.y),
 	interpolateTo:function (pt){
-		this.r.moveTo(1/3*(pt.x-this.x),1/3*(pt.y-this.y));
-		pt.l.moveTo(2/3*(pt.x-this.x),2/3*(pt.y-this.y));
+		//alert("interpolateTo");
+		this.r.moveBy(1/3*(pt.x-this.x),1/3*(pt.y-this.y));
+		pt.l.moveBy(2/3*(pt.x-this.x),2/3*(pt.y-this.y));
 	},
 	interpolateBetween:function(pt1,pt2){
 
@@ -119,6 +157,8 @@ class_Point.prototype = prot_Point;
 function class_fullPoint(x,y){
 	this.x = x;
 	this.y = y;
+	this.l = new class_Point(x,y);
+	this.r = new class_Point(x,y);
 }
 class_fullPoint.prototype = prot_fullPoint;
 
