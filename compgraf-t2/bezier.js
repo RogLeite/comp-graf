@@ -44,7 +44,8 @@ function onMouseUp(evt){
 
 function onMouseMove(evt){
 	if (pickedPoints.length === 0 ){
-		pickPoint(getPoint(evt));
+		//pickPoint(getPoint(evt));
+		pickedPoints.push(getPoint(evt));
 	}else{
 		pickedPoints[pickedPoints.length-1] = getPoint(evt);
 	}
@@ -100,9 +101,6 @@ function drawPoint(point,radius,color){
 
 
 
-function calcSlope(p1,p2){
-	return ((p2.y-p1.y)/(p2.x-p1.x));
-}
 //Points+++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//protótipos
 	
@@ -114,7 +112,7 @@ var prot_Point = {
 		return Math.sqrt(Math.pow(pt.x-thix.x,2)+Math.pow(pt.y-this.y,2));
 	},
 	slopeTo : function(pt){
-		return calcSlope(this,pt);
+		return ((pt.y-this.y)/(pt.x-this.x));
 	},
 	moveTo:function(x,y){
 		this.x = x;
@@ -138,7 +136,7 @@ var prot_fullPoint = {
 	interpolateTo:function (pt){
 		//alert("interpolateTo");
 		this.r.moveBy(1/3*(pt.x-this.x),1/3*(pt.y-this.y));
-		pt.l.moveBy(2/3*(pt.x-this.x),2/3*(pt.y-this.y));
+		pt.l.moveBy(-1/3*(pt.x-this.x),-1/3*(pt.y-this.y));
 	},
 	interpolateBetween:function(pt1,pt2){
 
