@@ -1,0 +1,3 @@
+[submodule "compgraf-t2/linear-solve"]
+	path = compgraf-t2/linear-solve
+	url = https://github.com/lovasoa/linear-solve
