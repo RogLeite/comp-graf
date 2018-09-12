@@ -1,7 +1,7 @@
+//const linear = require("linear-solve/gauss-jordan.js");
 var canvas =document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var pickedPoints = [];
-var linear = require("../linear-solve/gauss-jordan.js");
 
 
 
@@ -13,7 +13,7 @@ function pickPoint(point){
 	}
 
 	if(pickedPoints.length===1){
-		alert("pickedPoints[0]  = "+pickedPoints[0]);
+		//alert("pickedPoints[0]  = "+pickedPoints[0]);
 		pickedPoints[0].interpolateTo(point);
 	}else if(pickedPoints.length===2){
 		pickedPoints[0].interpolateBetween(pickedPoints[1],point);
@@ -34,9 +34,15 @@ function pickPoint(point){
 	}
 }
 
-function getPoint(evt){
-	let ret = canvas.getBoundingClientRect();
-	return new class_fullPoint(evt.clientX-ret.x,evt.clientY-ret.y);
+function getPoint(evt,point){
+	if(!point){
+		let ret = canvas.getBoundingClientRect();
+		return new class_fullPoint(evt.clientX-ret.x,evt.clientY-ret.y);
+	}else {
+		let ret = canvas.getBoundingClientRect();
+		point.moveTo(evt.clientX-ret.x,evt.clientY-ret.y);
+		//return point;
+	}
 }
 function onMouseUp(evt){
 	pickPoint( getPoint(evt));
@@ -47,8 +53,10 @@ function onMouseMove(evt){
 	if (pickedPoints.length === 0 ){
 		//pickPoint(getPoint(evt));
 		pickedPoints.push(getPoint(evt));
+		alert("pickedPoints[0].moveTo = "+pickedPoints[0].moveTo);
 	}else{
-		pickedPoints[pickedPoints.length-1] = getPoint(evt);
+		let mousePoint = pickedPoints[pickedPoints.length-1];
+		getPoint(evt,mousePoint);
 	}
     redraw();
 }
@@ -159,12 +167,12 @@ var prot_fullPoint = {
 		];
 		let solX,solY;
 		//Resolve componente x
-		solX = linear.solve(matrix,[p0.x,p1.x,0,p2.x]);
+		solX = solve(matrix,[p0.x,p1.x,0,p2.x]);
 		//solX => [r0.x,l1.x,r1.x,l2.x]
 		
 
 		//resolve componente y
-		solY = linear.solve(matrix,[p0.y,p1.y,0,p2.y]);
+		solY = solve(matrix,[p0.y,p1.y,0,p2.y]);
 		//solY => [r0.y,l1.y,r1.y,l2.y]
 
 		p0.r.moveTo(solX[0],solY[0]);
@@ -188,6 +196,7 @@ function class_Point(x,y){
 class_Point.prototype = prot_Point;
 
 function class_fullPoint(x,y){
+	alert("called class_fullPoint");
 	this.x = x;
 	this.y = y;
 	this.l = new class_Point(x,y);
@@ -202,3 +211,18 @@ function sumDistances(p0,p1,p2){
 	return p0.distanceTo(p1)+p1.distanceTo(p2);
 }
 //------------------------------------------------------------
+
+
+function equation(p0,p1,p2,p3,t){
+	return Math.pow(1-t,3)*p0 + 3*t*Math.pow(1-t,2)*p1 + 3*(1-t)*Math.pow(t,2)*p2 + Math.pow(t,3)*p3;
+};
+
+//construtor da função P(t) que retorna o ponto na curva de beziér cúbica
+function constructP(v0,v1,v2,v3){
+	return function(t){
+		return new class_Point(
+			equation(v0.x,v1.x,v2.x,v3.x),
+			equation(v0.y,v1.y,v2.y,v3.y)
+			);
+	};
+}
