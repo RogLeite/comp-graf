@@ -1,4 +1,4 @@
-//const linear = require("linear-solve/gauss-jordan.js");
+//const 'linear' = require("linear-solve/gauss-jordan.js");
 var canvas =document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var pickedPoints = [];
@@ -17,14 +17,10 @@ function pickPoint(point){
 		pickedPoints[0].interpolateTo(point);
 	}else if(pickedPoints.length===2){
 		pickedPoints[0].interpolateBetween(pickedPoints[1],point);
-	}/*else if(pickedPoints.length>2){
-		pickedPoints[pickedPoints.length-1].interpolateNew(point);
-	}*/
-	//só para ver se estão sendo desenhados+++
-	/*
-	point.l.moveBy(-3,0);
-	point.r.moveBy(3,0);
-	*/
+	}else if(pickedPoints.length>2){
+		pickedPoints[pickedPoints.length-1].interpolateNew(pickedPoints[pickedPoints.length-2],point);
+	}/**/
+	
 	//-----------------------------------------
 	pickedPoints.push(point);
 
@@ -40,7 +36,14 @@ function getPoint(evt,point){
 		return new class_fullPoint(evt.clientX-ret.x,evt.clientY-ret.y);
 	}else {
 		let ret = canvas.getBoundingClientRect();
-		point.moveTo(evt.clientX-ret.x,evt.clientY-ret.y);
+		let localX = evt.clientX-ret.x, localY = evt.clientY-ret.y;
+		point.moveTo();
+		if(point.l){
+			point.l.moveTo(localX,localY)
+		}
+		if(point.r){
+			point.r.moveTo(localX,localY)
+		}
 		//return point;
 	}
 }
@@ -53,7 +56,7 @@ function onMouseMove(evt){
 	if (pickedPoints.length === 0 ){
 		//pickPoint(getPoint(evt));
 		pickedPoints.push(getPoint(evt));
-		alert("pickedPoints[0].moveTo = "+pickedPoints[0].moveTo);
+		//alert("pickedPoints[0].moveTo = "+pickedPoints[0].moveTo);
 	}else{
 		let mousePoint = pickedPoints[pickedPoints.length-1];
 		getPoint(evt,mousePoint);
@@ -117,7 +120,7 @@ var prot_Point = {
 	x:100,
 	y:100,
 	distanceTo : function(pt){
-		return Math.sqrt(Math.pow(pt.x-thix.x,2)+Math.pow(pt.y-this.y,2));
+		return Math.sqrt(Math.pow(pt.x-this.x,2)+Math.pow(pt.y-this.y,2));
 	},
 	slopeTo : function(pt){
 		return ((pt.y-this.y)/(pt.x-this.x));
@@ -151,7 +154,7 @@ var prot_fullPoint = {
 		this.r.moveBy(1/3*(pt.x-this.x),1/3*(pt.y-this.y));
 		pt.l.moveBy(-1/3*(pt.x-this.x),-1/3*(pt.y-this.y));
 	},
-	interpolateBetween:function(pt1,pt2){
+	interpolateBetween:function(p1,p2){
 
 		/*
 		fonte : http://webserver2.tecgraf.puc-rio.br/~mgattass/cg/2018/03_Bezier.pdf
@@ -181,11 +184,31 @@ var prot_fullPoint = {
 		p2.l.moveTo(solX[3],solY[3]);
 
 	},
-	interpolateNew:function(pt){
+	interpolateNew:function(lastP,nextP){
 		/*
 		fonte : http://webserver2.tecgraf.puc-rio.br/~mgattass/cg/2018/03_Bezier.pdf
 		página 28
 		*/
+		let thisP = this;
+		let ro = calcRo(lastP,thisP,nextP);
+		let matrix = [
+			[1-ro,ro,0],
+			[-2,2,-1],
+			[0,-1,2]
+		];
+		let solX,solY;
+		//Resolve componente x
+		solX = solve(matrix,[thisP.x,-(lastP.r.x),nextP.x]);
+		//solX => [thisP.l.x,thisP.r.x,nextP.l.x]
+		
+
+		//resolve componente y
+		solY = solve(matrix,[thisP.y,-(lastP.r.y),nextP.y]);
+		//solY => [thisP.l.y,thisP.r.y,nextP.l.y]
+
+		thisP.l.moveTo(solX[0],solY[0]);
+		thisP.r.moveTo(solX[1],solY[1]);
+		nextP.l.moveTo(solX[2],solY[2]);
 	}
 };
 
@@ -196,7 +219,7 @@ function class_Point(x,y){
 class_Point.prototype = prot_Point;
 
 function class_fullPoint(x,y){
-	alert("called class_fullPoint");
+	//alert("called class_fullPoint");
 	this.x = x;
 	this.y = y;
 	this.l = new class_Point(x,y);
