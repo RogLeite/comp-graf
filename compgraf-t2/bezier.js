@@ -7,7 +7,7 @@ var pickedPoints = [];
 const resolution = 25;
 const s_moving = "moving";
 const s_selecting = "selecting";
-var mode = s_moving //pode assumir s_selecting ou s_moving
+var mode = s_selecting //pode assumir s_selecting ou s_moving
 
 
 
@@ -71,20 +71,28 @@ function getPoint(evt,point){
 	}
 }
 function onMouseUp(evt){
-	pickPoint( getPoint(evt));
-	redraw(true);
+	if(mode===s_selecting){
+		pickPoint( getPoint(evt));
+		redraw(true);
+	}else if(mode === s_moving){
+		console.log(this+" is in mode === s_moving");
+	}
 }
 
 function onMouseMove(evt){
-	if (pickedPoints.length === 0 ){
-		//pickPoint(getPoint(evt));
-		pickedPoints.push(getPoint(evt));
-		//alert("pickedPoints[0].moveTo = "+pickedPoints[0].moveTo);
-	}else{
-		let mousePoint = pickedPoints[pickedPoints.length-1];
-		getPoint(evt,mousePoint);
+	if(mode === s_selecting){
+		if (pickedPoints.length === 0 ){
+			//pickPoint(getPoint(evt));
+			pickedPoints.push(getPoint(evt));
+			//alert("pickedPoints[0].moveTo = "+pickedPoints[0].moveTo);
+		}else{
+			let mousePoint = pickedPoints[pickedPoints.length-1];
+			getPoint(evt,mousePoint);
+		}
+		redraw(true);
+	}else if (mode === s_moving){
+		console.log(this+" is in mode === s_moving");
 	}
-    redraw(true);
 }
 
 function redraw(redrawBezier){
