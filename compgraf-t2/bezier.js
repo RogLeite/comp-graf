@@ -3,9 +3,14 @@ var canvas =document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var pickedPoints = [];
 
+//resolução de cada spline
+const resolution = 25;
+
 var mode = s_moving //pode assumir s_selecting ou s_moving
 const s_moving = "moving";
 const s_selecting = "selecting";
+
+
 
 function toggleMode(){
 	if(mode === s_selecting){
@@ -55,7 +60,7 @@ function getPoint(evt,point){
 	}else {
 		let ret = canvas.getBoundingClientRect();
 		let localX = evt.clientX-ret.x, localY = evt.clientY-ret.y;
-		point.moveTo();
+		point.moveTo(localX,localY);
 		if(point.l){
 			point.l.moveTo(localX,localY)
 		}
@@ -67,7 +72,7 @@ function getPoint(evt,point){
 }
 function onMouseUp(evt){
 	pickPoint( getPoint(evt));
-	redraw();
+	redraw(true);
 }
 
 function onMouseMove(evt){
@@ -82,7 +87,7 @@ function onMouseMove(evt){
     redraw();
 }
 
-function redraw(){
+function redraw(redrawBezier){
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 	ctx.fillStyle = "#0000FF";
 	let ultimo = pickedPoints.length-1;
@@ -102,7 +107,20 @@ function redraw(){
 			drawPoint(pickedPoints[i].l,2,"#00FF00");
 		}
 	}
+	if(pickedPoints.length>2&& redrawBezier){
+		for(let i=0;i<pickedPoints.length-2;i++){//ignora o ponto do mouse
+			drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
+		}
+	}
 
+}
+
+function drawBezierBetween(p0,p1){
+	let P = constructP(p0,p0.r,p1.l,p1);
+	let dt = 1/resolution;
+	for(let t=0;t<=1;t+=dt){
+		drawLine(P(t),P(t+dt));
+	}
 }
 
 function drawLine(start,end){
@@ -262,8 +280,8 @@ function equation(p0,p1,p2,p3,t){
 function constructP(v0,v1,v2,v3){
 	return function(t){
 		return new class_Point(
-			equation(v0.x,v1.x,v2.x,v3.x),
-			equation(v0.y,v1.y,v2.y,v3.y)
+			equation(v0.x,v1.x,v2.x,v3.x,t),
+			equation(v0.y,v1.y,v2.y,v3.y,t)
 			);
 	};
 }
