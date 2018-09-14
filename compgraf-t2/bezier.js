@@ -5,10 +5,10 @@ var pickedPoints = [];
 
 //resolução de cada spline
 const resolution = 25;
-
-var mode = s_moving //pode assumir s_selecting ou s_moving
 const s_moving = "moving";
 const s_selecting = "selecting";
+var mode = s_moving //pode assumir s_selecting ou s_moving
+
 
 
 
@@ -84,7 +84,7 @@ function onMouseMove(evt){
 		let mousePoint = pickedPoints[pickedPoints.length-1];
 		getPoint(evt,mousePoint);
 	}
-    redraw();
+    redraw(true);
 }
 
 function redraw(redrawBezier){
