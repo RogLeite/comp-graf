@@ -3,6 +3,24 @@ var canvas =document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var pickedPoints = [];
 
+var mode = s_moving //pode assumir s_selecting ou s_moving
+const s_moving = "moving";
+const s_selecting = "selecting";
+
+function toggleMode(){
+	if(mode === s_selecting){
+		mode = s_moving;
+	}else if(mode === s_moving){
+		mode = s_selecting;
+	}
+}
+function setMode(s){
+	if(s!== s_selecting || s!==s_moving){
+		console.log("ERROR: in setMode(s) s is not a valid mode");
+	}else{
+		mode = s;
+	}
+}
 
 
 function pickPoint(point){
