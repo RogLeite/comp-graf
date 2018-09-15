@@ -3,6 +3,10 @@ var canvas =document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var pickedPoints = [];
 
+const linePointRadius = 5;
+const handlePointRadius = 4;
+
+
 //resolução de cada spline
 const resolution = 25;
 const s_moving = "moving";
@@ -16,8 +20,13 @@ function toggleMode(){
 	//alert("Mode Toggled");
 	if(mode === s_selecting){
 		mode = s_moving;
+		if(pickedPoints.length>1){
+			pickedPoints.pop();
+			redraw(true);
+		}
 	}else if(mode === s_moving){
 		mode = s_selecting;
+		pickedPoints.push(new class_fullPoint(0,0));
 	}
 }
 function setMode(s){
@@ -77,7 +86,7 @@ function onMouseUp(evt){
 		redraw(true);
 	}else if(mode === s_moving){
 		console.log(this+" is in mode === s_moving");
-		redraw(true);
+		//redraw(true);
 	}
 }
 
@@ -104,12 +113,20 @@ function redraw(redrawBezier){
 	let next = pickedPoints[ultimo];
 
 	//Draw Bezier
-	if(pickedPoints.length>2&& redrawBezier){
-		for(let i=0;i<pickedPoints.length-2;i++){//ignora o ponto do mouse
-			drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
+	if (mode===s_selecting){
+		if(pickedPoints.length>2&& redrawBezier){
+			for(let i=0;i<pickedPoints.length-2;i++){//ignora o ponto do mouse
+				drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
+			}
 		}
 	}
-
+	if (mode===s_moving){
+		if(pickedPoints.length>2&& redrawBezier){
+			for(let i=0;i<pickedPoints.length-1;i++){//ignora o ponto do mouse
+				drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
+			}
+		}
+	}
 	//Draw Linha
 	if(pickedPoints.length>1&&mode===s_selecting){
 		let penultimo = pickedPoints.length-2;
@@ -125,17 +142,17 @@ function redraw(redrawBezier){
 	for (let i=0;i<qtdPoints;i++){
 		if(pickedPoints[i].r){
 			drawLine(pickedPoints[i],pickedPoints[i].r,2,"#FFFF00");
-			drawPoint(pickedPoints[i].r,4,"#00FF00");
-			drawPoint(pickedPoints[i].r,2,"#666666");
+			drawPoint(pickedPoints[i].r,handlePointRadius,"#00FF00");
+			drawPoint(pickedPoints[i].r,handlePointRadius-1.5,"#444444");
 			
 		}
 		if(pickedPoints[i].l){
 			drawLine(pickedPoints[i],pickedPoints[i].l,2,"#FFFF00");
-			drawPoint(pickedPoints[i].l,4,"#00FF00");
-			drawPoint(pickedPoints[i].l,2,"#666666");
+			drawPoint(pickedPoints[i].l,handlePointRadius,"#00FF00");
+			drawPoint(pickedPoints[i].l,handlePointRadius-1.5,"#444444");
 		}
-		drawPoint(pickedPoints[i],5,"#FFFFFF");
-		drawPoint(pickedPoints[i],4.5,"#1111FF");
+		drawPoint(pickedPoints[i],linePointRadius,"#FFFFFF");
+		drawPoint(pickedPoints[i],linePointRadius-0.5,"#1111FF");
 	}
 
 }
@@ -317,4 +334,10 @@ function constructP(v0,v1,v2,v3){
 			equation(v0.y,v1.y,v2.y,v3.y,t)
 			);
 	};
+}
+
+function findCollidedPoint(mousePoint){
+}
+function checkCollision(p0,p1,radius1){
+	return p0.distanceTo(p1)<=radius1;
 }
