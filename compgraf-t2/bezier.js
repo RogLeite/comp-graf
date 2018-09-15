@@ -333,6 +333,7 @@ function constructP(v0,v1,v2,v3){
 }
 
 function findCollidedPoint(mousePoint){
+	//percorre todos os pontos
 }
 function checkCollision(p0,p1,radius1){
 	return p0.distanceTo(p1)<=radius1;
