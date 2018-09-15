@@ -107,11 +107,19 @@ function onMouseDown(evt){
 		let selectedPoint = findCollidedPoint(l_mousePoint);
 		console.log("selectedPoint = "+selectedPoint);
 		movingPoint = selectedPoint;
-		
+		/*
+		if(movingPoint instanceof class_fullPoint){
+			console.log("movingPoint is instanceof class_fullPoint");
+		}else if(movingPoint instanceof class_Point){
+			console.log("movingPoint is instanceof class_Point");
+		}else{
+			console.log("movingPoint is no instance");
+		}//*/
 		redraw(true);
 	}
 }
 function onMouseMove(evt){
+	let l_mousePoint = getPoint(evt);
 	if(mode === s_selecting){
 		if (pickedPoints.length === 0 ){
 			//pickPoint(getPoint(evt));
@@ -124,6 +132,37 @@ function onMouseMove(evt){
 		redraw(true);
 	}else if (mode === s_moving){
 		//console.log(this+" is in mode === s_moving");
+		if(movingPoint){
+
+			if(movingPoint instanceof class_fullPoint){
+				console.log("movingPoint is instanceof class_fullPoint");
+				let dx = l_mousePoint.x-movingPoint.x,dy = l_mousePoint.y-movingPoint.y;
+				movingPoint.moveBy(dx,dy);
+				movingPoint.l.moveBy(dx,dy);
+				movingPoint.r.moveBy(dx,dy);
+
+			}else if(movingPoint instanceof class_Point){
+				console.log("movingPoint is instanceof class_Point");
+				let dx = l_mousePoint.x-movingPoint.x,dy = l_mousePoint.y-movingPoint.y;
+				let x0 = l_mousePoint.x,y0 = l_mousePoint.y;
+				let x1 = x0+dx,y1 = y0+dy;
+				let dTheta = y1/x1-y0/x0;
+				let oppositePoint;
+				if(movingPoint===movingPoint.parentPoint.l){
+					oppositePoint = movingPoint.parentPoint.r;
+				}else if(movingPoint===movingPoint.parentPoint.r){
+					oppositePoint = movingPoint.parentPoint.l;
+				}
+				movingPoint.moveBy(dx,dy);
+				oppositePoint.moveBy(-dx,-dy);
+
+			}else{
+				console.log("movingPoint is no instance");
+			}
+
+			redraw(true);
+		}
+
 	}
 }
 
@@ -144,7 +183,7 @@ function redraw(redrawBezier){
 			drawPoint(movingPoint,highlightRadius,"#FFFF22");
 		}
 	}
-	if(pickedPoints.length>2&& redrawBezier){
+	if(pickedPoints.length>1&& redrawBezier){
 		for(let i=0;i<allPoints;i++){//ignora o ponto do mouse
 			drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
 		}
@@ -162,13 +201,13 @@ function redraw(redrawBezier){
 	let qtdPoints = pickedPoints.length;
 	for (let i=0;i<qtdPoints;i++){
 		if(pickedPoints[i].r){
-			drawLine(pickedPoints[i],pickedPoints[i].r,2,"#FFFF00");
+			drawLine(pickedPoints[i],pickedPoints[i].r,1,"#FFFF00");
 			drawPoint(pickedPoints[i].r,handlePointRadius,"#00FF00");
 			drawPoint(pickedPoints[i].r,handlePointRadius-1.5,"#444444");
 			
 		}
 		if(pickedPoints[i].l){
-			drawLine(pickedPoints[i],pickedPoints[i].l,2,"#FFFF00");
+			drawLine(pickedPoints[i],pickedPoints[i].l,1,"#FFFF00");
 			drawPoint(pickedPoints[i].l,handlePointRadius,"#00FF00");
 			drawPoint(pickedPoints[i].l,handlePointRadius-1.5,"#444444");
 		}
