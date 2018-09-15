@@ -305,7 +305,9 @@ function class_fullPoint(x,y){
 	this.x = x;
 	this.y = y;
 	this.l = new class_Point(x,y);
+	this.l.parentPoint = this;
 	this.r = new class_Point(x,y);
+	this.r.parentPoint = this;
 }
 class_fullPoint.prototype = prot_fullPoint;
 
