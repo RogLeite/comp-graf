@@ -2,9 +2,11 @@
 var canvas =document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var pickedPoints = [];
+var movingPoint;
 
+const highlightRadius = 6;
 const linePointRadius = 5;
-const handlePointRadius = 4;
+const handlePointRadius = 5;
 
 
 //resolução de cada spline
@@ -86,8 +88,12 @@ function onMouseUp(evt){
 		pickPoint( l_mousePoint);
 		redraw(true);
 	}else if(mode === s_moving){
-		console.log(this+" is in mode === s_moving");
-		//redraw(true);
+		//console.log(this+" is in mode === s_moving");
+		if(movingPoint){
+			movingPoint=undefined;
+			console.log("is movingPoint undefined? = "+movingPoint);
+		}
+		redraw(true);
 	}
 }
 function onMouseDown(evt){
@@ -97,10 +103,12 @@ function onMouseDown(evt){
 		redraw(true);
 		//*/
 	}else if(mode === s_moving){
-		console.log(this+" is in mode === s_moving");
+		//console.log(this+" is in mode === s_moving");
 		let selectedPoint = findCollidedPoint(l_mousePoint);
-		console.log(selectedPoint);
-		//redraw(true);
+		console.log("selectedPoint = "+selectedPoint);
+		movingPoint = selectedPoint;
+		
+		redraw(true);
 	}
 }
 function onMouseMove(evt){
@@ -131,6 +139,10 @@ function redraw(redrawBezier){
 	}
 	if (mode===s_moving){
 		allPoints = pickedPoints.length-1;
+		if (movingPoint){
+			//draw highlight
+			drawPoint(movingPoint,highlightRadius,"#FFFF22");
+		}
 	}
 	if(pickedPoints.length>2&& redrawBezier){
 		for(let i=0;i<allPoints;i++){//ignora o ponto do mouse
