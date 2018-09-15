@@ -81,15 +81,28 @@ function getPoint(evt,point){
 	}
 }
 function onMouseUp(evt){
+	let l_mousePoint=getPoint(evt);
 	if(mode===s_selecting){
-		pickPoint( getPoint(evt));
+		pickPoint( l_mousePoint);
 		redraw(true);
 	}else if(mode === s_moving){
 		console.log(this+" is in mode === s_moving");
 		//redraw(true);
 	}
 }
-
+function onMouseDown(evt){
+	let l_mousePoint=getPoint(evt);
+	if(mode===s_selecting){
+		/*pickPoint( getPoint(evt));
+		redraw(true);
+		//*/
+	}else if(mode === s_moving){
+		console.log(this+" is in mode === s_moving");
+		let selectedPoint = findCollidedPoint(l_mousePoint);
+		console.log(selectedPoint);
+		//redraw(true);
+	}
+}
 function onMouseMove(evt){
 	if(mode === s_selecting){
 		if (pickedPoints.length === 0 ){
@@ -336,6 +349,20 @@ function constructP(v0,v1,v2,v3){
 
 function findCollidedPoint(mousePoint){
 	//percorre todos os pontos
+	for(let i=0;i<pickedPoints.length;i++){
+		if(checkCollision(pickedPoints[i],mousePoint,linePointRadius)){
+			return pickedPoints[i];
+		}
+	}
+	for(let i=0;i<pickedPoints.length;i++){
+		if(checkCollision(pickedPoints[i].l,mousePoint,handlePointRadius)){
+			return pickedPoints[i].l;
+		}
+		if(checkCollision(pickedPoints[i].r,mousePoint,handlePointRadius)){
+			return pickedPoints[i].r;
+		}
+	}
+	return false;
 }
 function checkCollision(p0,p1,radius1){
 	return p0.distanceTo(p1)<=radius1;
