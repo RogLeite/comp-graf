@@ -13,6 +13,7 @@ var mode = s_selecting //pode assumir s_selecting ou s_moving
 
 
 function toggleMode(){
+	//alert("Mode Toggled");
 	if(mode === s_selecting){
 		mode = s_moving;
 	}else if(mode === s_moving){
@@ -76,6 +77,7 @@ function onMouseUp(evt){
 		redraw(true);
 	}else if(mode === s_moving){
 		console.log(this+" is in mode === s_moving");
+		redraw(true);
 	}
 }
 
@@ -91,7 +93,7 @@ function onMouseMove(evt){
 		}
 		redraw(true);
 	}else if (mode === s_moving){
-		console.log(this+" is in mode === s_moving");
+		//console.log(this+" is in mode === s_moving");
 	}
 }
 
@@ -101,24 +103,39 @@ function redraw(redrawBezier){
 	let ultimo = pickedPoints.length-1;
 	let next = pickedPoints[ultimo];
 
-	if(pickedPoints.length>1){
-		let penultimo = pickedPoints.length-2;
-		let pick = pickedPoints[penultimo];
-		drawLine(pick,next);
-	}
-	for (let i=0;i<pickedPoints.length;i++){
-		drawPoint(pickedPoints[i]);
-		if(pickedPoints[i].r){
-			drawPoint(pickedPoints[i].r,2,"#00FF00");
-		}
-		if(pickedPoints[i].l){
-			drawPoint(pickedPoints[i].l,2,"#00FF00");
-		}
-	}
+	//Draw Bezier
 	if(pickedPoints.length>2&& redrawBezier){
 		for(let i=0;i<pickedPoints.length-2;i++){//ignora o ponto do mouse
 			drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
 		}
+	}
+
+	//Draw Linha
+	if(pickedPoints.length>1&&mode===s_selecting){
+		let penultimo = pickedPoints.length-2;
+		let pick = pickedPoints[penultimo];
+		drawLine(pick,next);
+	}
+
+	//Draw Pontos
+	let qtdPoints = pickedPoints.length;
+	if (mode!==s_selecting&&qtdPoints>0){
+		qtdPoints--;
+	}
+	for (let i=0;i<qtdPoints;i++){
+		if(pickedPoints[i].r){
+			drawLine(pickedPoints[i],pickedPoints[i].r,2,"#FFFF00");
+			drawPoint(pickedPoints[i].r,4,"#00FF00");
+			drawPoint(pickedPoints[i].r,2,"#666666");
+			
+		}
+		if(pickedPoints[i].l){
+			drawLine(pickedPoints[i],pickedPoints[i].l,2,"#FFFF00");
+			drawPoint(pickedPoints[i].l,4,"#00FF00");
+			drawPoint(pickedPoints[i].l,2,"#666666");
+		}
+		drawPoint(pickedPoints[i],5,"#FFFFFF");
+		drawPoint(pickedPoints[i],4.5,"#1111FF");
 	}
 
 }
@@ -131,9 +148,17 @@ function drawBezierBetween(p0,p1){
 	}
 }
 
-function drawLine(start,end){
-	ctx.strokeStyle = "#FF0000";
-	ctx.lineWidth = 2;
+function drawLine(start,end,width,color){
+	let cor = color;
+	if(!cor){
+		cor = "#FF0000";
+	}
+	let largura = width;
+	if(!largura){
+		largura = 3;
+	}
+	ctx.strokeStyle = cor;
+	ctx.lineWidth = largura;
 	ctx.lineJoin  = "round";
 	ctx.beginPath();
 	ctx.moveTo(start.x, start.y);
