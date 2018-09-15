@@ -111,22 +111,21 @@ function redraw(redrawBezier){
 	ctx.fillStyle = "#0000FF";
 	let ultimo = pickedPoints.length-1;
 	let next = pickedPoints[ultimo];
-
+	let allPoints;
 	//Draw Bezier
 	if (mode===s_selecting){
-		if(pickedPoints.length>2&& redrawBezier){
-			for(let i=0;i<pickedPoints.length-2;i++){//ignora o ponto do mouse
-				drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
-			}
-		}
+		allPoints = pickedPoints.length-2;
 	}
 	if (mode===s_moving){
-		if(pickedPoints.length>2&& redrawBezier){
-			for(let i=0;i<pickedPoints.length-1;i++){//ignora o ponto do mouse
-				drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
-			}
+		allPoints = pickedPoints.length-1;
+	}
+	if(pickedPoints.length>2&& redrawBezier){
+		for(let i=0;i<allPoints;i++){//ignora o ponto do mouse
+			drawBezierBetween(pickedPoints[i],pickedPoints[i+1]);
 		}
 	}
+
+
 	//Draw Linha
 	if(pickedPoints.length>1&&mode===s_selecting){
 		let penultimo = pickedPoints.length-2;
@@ -136,9 +135,6 @@ function redraw(redrawBezier){
 
 	//Draw Pontos
 	let qtdPoints = pickedPoints.length;
-	if (mode!==s_selecting&&qtdPoints>0){
-		qtdPoints--;
-	}
 	for (let i=0;i<qtdPoints;i++){
 		if(pickedPoints[i].r){
 			drawLine(pickedPoints[i],pickedPoints[i].r,2,"#FFFF00");
