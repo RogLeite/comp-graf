@@ -418,3 +418,8 @@ function findCollidedPoint(mousePoint){
 function checkCollision(p0,p1,radius1){
 	return p0.distanceTo(p1)<=radius1;
 }
+
+function clickedReset(){
+	//por enquato
+	alert("Ainda não está resetando");
+}
