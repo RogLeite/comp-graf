@@ -106,7 +106,7 @@ function onMouseDown(evt){
 		/*pickPoint( getPoint(evt));
 		redraw(true);
 		//*/
-	}else if(mode === s_moving){
+	}else if(mode === s_moving&&drawHandles){
 		//console.log(this+" is in mode === s_moving");
 		let selectedPoint = findCollidedPoint(l_mousePoint);
 		console.log("selectedPoint = "+selectedPoint);
