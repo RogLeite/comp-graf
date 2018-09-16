@@ -151,14 +151,36 @@ function onMouseMove(evt){
 				let x0 = l_mousePoint.x,y0 = l_mousePoint.y;
 				let x1 = x0+dx,y1 = y0+dy;
 				let dTheta = y1/x1-y0/x0;
+				movingPoint.moveBy(dx,dy);
+				
+				/*
+				
+				//oppositePoint.moveBy(-dx,-dy);
+				let divisor;
 				let oppositePoint;
 				if(movingPoint===movingPoint.parentPoint.l){
 					oppositePoint = movingPoint.parentPoint.r;
 				}else if(movingPoint===movingPoint.parentPoint.r){
 					oppositePoint = movingPoint.parentPoint.l;
 				}
-				movingPoint.moveBy(dx,dy);
-				//oppositePoint.moveBy(-dx,-dy);
+				let Px = x1,Py = y1;
+				if(Px>Py){
+					divisor = Px;
+				}else{
+					divisor = Py;
+				}
+				Px/=divisor;
+				Py/=divisor;
+				let matriz = [[Px,Py],[-Py,Px]];
+				let oPx = oppositePoint.x*Px +oppositePoint.y*(-Py);
+				let oPy =  oppositePoint.x*Py +oppositePoint.y*(Px);
+				oppositePoint.moveTo(oPx,oPy);
+				if(oPx>oPy){
+					divisor = oPx;
+				}else{
+					divisor = oPy;
+				}
+				//*/
 
 			}else{
 				console.log("movingPoint is no instance");
