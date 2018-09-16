@@ -15,7 +15,11 @@ const s_moving = "moving";
 const s_selecting = "selecting";
 var mode = s_selecting //pode assumir s_selecting ou s_moving
 
-
+var drawHandles = true;
+function toggleHandles(){
+	drawHandles = !drawHandles;
+	redraw(true);
+}
 
 
 function toggleMode(){
@@ -154,7 +158,7 @@ function onMouseMove(evt){
 					oppositePoint = movingPoint.parentPoint.l;
 				}
 				movingPoint.moveBy(dx,dy);
-				oppositePoint.moveBy(-dx,-dy);
+				//oppositePoint.moveBy(-dx,-dy);
 
 			}else{
 				console.log("movingPoint is no instance");
@@ -200,13 +204,13 @@ function redraw(redrawBezier){
 	//Draw Pontos
 	let qtdPoints = pickedPoints.length;
 	for (let i=0;i<qtdPoints;i++){
-		if(pickedPoints[i].r){
+		if(pickedPoints[i].r&&drawHandles){
 			drawLine(pickedPoints[i],pickedPoints[i].r,1,"#FFFF00");
 			drawPoint(pickedPoints[i].r,handlePointRadius,"#00FF00");
 			drawPoint(pickedPoints[i].r,handlePointRadius-1.5,"#444444");
 			
 		}
-		if(pickedPoints[i].l){
+		if(pickedPoints[i].l&&drawHandles){
 			drawLine(pickedPoints[i],pickedPoints[i].l,1,"#FFFF00");
 			drawPoint(pickedPoints[i].l,handlePointRadius,"#00FF00");
 			drawPoint(pickedPoints[i].l,handlePointRadius-1.5,"#444444");
@@ -421,5 +425,8 @@ function checkCollision(p0,p1,radius1){
 
 function clickedReset(){
 	//por enquato
-	alert("Ainda não está resetando");
+	//alert("Ainda não está resetando");
+	movingPoint = undefined;
+	pickedPoints = [];
+	redraw();
 }
