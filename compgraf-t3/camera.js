@@ -64,10 +64,16 @@ var prot_Camera = {
                 let pixel = scene.checkCollision(P);
                 //[[TODO]] decidir o q faz com o pixel
             }
-
+            
         }
     },
     makeP:function(i,j){
+        let d=makeD(i,j);
+        return function(t){
+            return(add(this.extr.eye,multiply(-t,d)));
+        };
+    },
+    makeD:function(i,j){
         //[[TODO]]
     },
 
