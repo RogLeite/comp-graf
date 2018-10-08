@@ -51,11 +51,15 @@ var prot_Camera = {
         this.update();
     },
     update:function(){
+        this.intr.fov_rad = this.intr.fov_deg*Math.PI/180;
         let partial = subtract(this.extr.eye,this.extr.center);
         this.intr.ze=normalize(partial);//divide pela norma
         partial = cross(this.extr.up,this.intr.ze);//crossproduct
         this.intr.xe=normalize(partial);
         this.intr.ye=cross(this.extr.ze,this.extr.xe);
+        this.intr.df = this.intr.near;
+        this.intr.altura = 2*this.intr.df*Math.tan(this.intr.fov_rad/2);
+        this.intr.base = (this.intr.w/this.intr.h)*this.intr.altura;
     },
     rayTrace:function(scene){
         //for every pixel
@@ -66,7 +70,7 @@ var prot_Camera = {
             }
             for(let j=0;j<this.intr.h;j++){
                 let P = this.makeP(i,j);
-                let pixel = scene.trace(P);
+                let pixel = scene.trace(P,this.extr.eye);
                 if(!this.pxMatrix[i][j]){
                     this.pxMatrix[i].push([]);
                 }
@@ -76,12 +80,19 @@ var prot_Camera = {
     },
     makeP:function(i,j){
         let d=makeD(i,j);
-        return function(t){
+        function P(t){
             return(add(this.extr.eye,multiply(-t,d)));
         };
+        P.unit = normalize(mult(-1,d));
+        return P;
     },
     makeD:function(i,j){
-        //[[TODO]]
+        let local_z = multiply(-this.intr.df,this.intr.ze);
+        let local_y = multiply(this.intr.altura*(j/this.intr.h-1/2),this.intr.ye);
+        let local_x = multiply(this.intr.base*(i/this.intr.w-1/2),this.intr.xe);
+        let partial_sum = sum(local_x,local_y);
+        let d = sum(partial_sum,local_z);
+        return d;
     },
 
 };
