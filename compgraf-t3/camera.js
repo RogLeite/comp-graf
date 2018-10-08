@@ -21,6 +21,7 @@ console.log(m3);
 
 
 var prot_Camera = {
+    pxMatrix:[],
     extr:{
         eye:matrix([1],[1],[1]),
         up:matrix([0],[1],[0]),
@@ -56,15 +57,21 @@ var prot_Camera = {
         this.intr.xe=normalize(partial);
         this.intr.ye=cross(this.extr.ze,this.extr.xe);
     },
-    projectNear:function(scene){
+    rayTrace:function(scene){
         //for every pixel
+
         for(let i=0;i<this.intr.w;i++){
+            if(!this.pxMatrix[i]){
+                this.pxMatrix.push([]);
+            }
             for(let j=0;j<this.intr.h;j++){
                 let P = this.makeP(i,j);
-                let pixel = scene.checkCollision(P);
-                //[[TODO]] decidir o q faz com o pixel
+                let pixel = scene.trace(P);
+                if(!this.pxMatrix[i][j]){
+                    this.pxMatrix[i].push([]);
+                }
+                pxMatrix[i][j] = pixel;
             }
-            
         }
     },
     makeP:function(i,j){
@@ -80,10 +87,12 @@ var prot_Camera = {
 };
 function class_Camera(eye,up){
     this.eye = eye;
+    this.up = up;
 }
 class_Camera.prototype = prot_Camera;
 
 function paintScene(evt){
+    let newData = ctx.createImageData(imgData);
 
 }
 
