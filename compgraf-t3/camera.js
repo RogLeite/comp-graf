@@ -1,6 +1,12 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
+
+var main_cam = new class_Camera();
+main_cam.update();
+var main_scene = new class_Scene();
+main_scene.insertCam(main_cam);
+
 var r = 0;
 var g = 1;
 var b = 2;
@@ -23,6 +29,7 @@ console.log(m3);
 var prot_Camera = {
     pxMatrix:[],
     extr:{
+        scene:{},
         eye:matrix([1],[1],[1]),
         up:matrix([0],[1],[0]),
         center:matrix([2],[2],[2]),
@@ -61,7 +68,8 @@ var prot_Camera = {
         this.intr.altura = 2*this.intr.df*Math.tan(this.intr.fov_rad/2);
         this.intr.base = (this.intr.w/this.intr.h)*this.intr.altura;
     },
-    rayTrace:function(scene){
+    rayTrace:function(){
+        let scene = this.extr.scene;
         //for every pixel
 
         for(let i=0;i<this.intr.w;i++){
@@ -70,7 +78,7 @@ var prot_Camera = {
             }
             for(let j=0;j<this.intr.h;j++){
                 let P = this.makeP(i,j);
-                let pixel = scene.trace(P,this.extr.eye);
+                let pixel = scene.trace(P,this.extr.eye,this.intr.far);
                 if(!this.pxMatrix[i][j]){
                     this.pxMatrix[i].push([]);
                 }
@@ -102,9 +110,13 @@ function class_Camera(eye,up){
 }
 class_Camera.prototype = prot_Camera;
 
-function paintScene(evt){
+function paintCam(evt){
     let newData = ctx.createImageData(imgData);
-
+    main_cam.rayTrace();
+    forEachPixel(newData,function(X,Y){
+            setPixel(newData,X,Y,main_cam.pxMatrix[X,Y]);
+        });
+    ctx.drawImage(newData,0,0,canvas.clientWidth,canvas.clientHeight);
 }
 
 //Pixel operations+++++++++++++++++++++++++++++++++++++++++++++++++

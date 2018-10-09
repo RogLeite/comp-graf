@@ -8,12 +8,20 @@ const STD={
 
 const prot_Scene = {
     solids:[],
+    cameras:[],
+    lights:[],
+    insertCam:function(cam){
+        cam.extr.scene = this;
+        this.cameras.push(cam);
+    },
     trace:function(P,Origin,max_t){
         let obj = {obj:undefined,dist:max_t+1};
         solids.forEach(function(element){
             let here = element.checkCollision(P,Origin,max_t);
-            if (here.dist<obj.dist){
-                obj = here;
+            if(here){//se houve colisãoS
+                if (here.dist<obj.dist){
+                    obj = here;
+                }
             }
         });
         return obj.shade(P);
@@ -50,12 +58,24 @@ const prot_Sphere = {
     color_specular:STD.specular,
     checkCollision:function(P,Origin,max_t){
         let local_a = multiply(P.unit,P.unit);
-        let local_b = ;
-        let local_c;
-        //[[TODO]]
+        let local_b = multiply(multiply(2,P.unit),sum(Origin,multiply(-1,this.center)));
+        let local_c = sum(multiply(sum(Origin,multiply(-1,this.center)),sum(Origin,multiply(-1,this.center))),-Math.pow(this.radius,2));
+        let delta = Math.pow(local_b,2) - 4*local_a*local_c;
+        if(delta<0){
+            return false;
+        } else if(delta===0){
+            let t1 = -local_b/(2*local_a);
+            return {obj:this,t:t1};
+        }else{
+            let t1 = -local_b-Math.sqrt(delta)/(2*local_a);
+            let t2 = -local_b+Math.sqrt(delta)/(2*local_a);
+            return {obj:this,t:Math.min(t1,t2)};
+        }
     },
     shade:function(P){
+        //[[TODO]] shader da esfera
         return this.difuse;
+
     }
 };
 function class_Sphere(){
