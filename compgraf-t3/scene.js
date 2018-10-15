@@ -1,3 +1,6 @@
+
+import * as my_math from 'mathjs';
+
 const STD={
     color:[1,1,1,1],
     difuse:[1,0,0,1],//red
@@ -18,7 +21,7 @@ const prot_Scene = {
         let obj = {obj:undefined,dist:max_t+1};
         solids.forEach(function(element){
             let here = element.checkCollision(P,Origin,max_t);
-            if(here){//se houve colisãoS
+            if(here){//se houve colisão
                 if (here.dist<obj.dist){
                     obj = here;
                 }
@@ -51,15 +54,15 @@ const prot_Solid = {
 
 const prot_Sphere = {
     //[[TODO]]
-    center:matrix([10],[10],[10]),
+    center:my_math.matrix([10],[10],[10]),
     radius:5,
     color_difuse:STD.color_sphere,
     color_ambient:STD.ambient,
     color_specular:STD.specular,
     checkCollision:function(P,Origin,max_t){
-        let local_a = multiply(P.unit,P.unit);
-        let local_b = multiply(multiply(2,P.unit),sum(Origin,multiply(-1,this.center)));
-        let local_c = sum(multiply(sum(Origin,multiply(-1,this.center)),sum(Origin,multiply(-1,this.center))),-Math.pow(this.radius,2));
+        let local_a = my_math.multiply(P.unit,P.unit);
+        let local_b = my_math.multiply(my_math.multiply(2,P.unit),my_math.add(Origin,my_math.multiply(-1,this.center)));
+        let local_c = my_math.add(my_math.multiply(my_math.add(Origin,my_math.multiply(-1,this.center)),my_math.add(Origin,my_math.multiply(-1,this.center))),-Math.pow(this.radius,2));
         let delta = Math.pow(local_b,2) - 4*local_a*local_c;
         if(delta<0){
             return false;

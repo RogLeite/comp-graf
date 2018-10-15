@@ -1,3 +1,6 @@
+
+import * as my_math from 'mathjs';
+
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
@@ -7,21 +10,21 @@ main_cam.update();
 var main_scene = new class_Scene();
 main_scene.insertCam(main_cam);
 
-var r = 0;
-var g = 1;
-var b = 2;
-var a = 3;
-var qtdParColor = a;
+const r = 0;
+const g = 1;
+const b = 2;
+const a = 3;
+const qtdParColor = a;
 
 const x=0;
 const y=1;
 const z=2;
 
-const m1 = matrix([[0,-1],
+const m1 = my_math.matrix([[0,-1],
                         [1,0]]);
-const m2 = matrix([[2,1],
+const m2 = my_math.matrix([[2,1],
                         [1,2]]);
-const m3 = multiply(m1,m2);
+const m3 = my_math.multiply(m1,m2);
 
 console.log(m3);
 
@@ -30,14 +33,14 @@ var prot_Camera = {
     pxMatrix:[],
     extr:{
         scene:{},
-        eye:matrix([1],[1],[1]),
-        up:matrix([0],[1],[0]),
-        center:matrix([2],[2],[2]),
+        eye:my_math.matrix([1],[1],[1]),
+        up:my_math.matrix([0],[1],[0]),
+        center:my_math.matrix([2],[2],[2]),
     },
     intr:{
-        xe:matrix([1],[0],[0]),
-        ye:matrix([0],[1],[0]),
-        ze:matrix([0],[0],[1]),
+        xe:my_math.matrix([1],[0],[0]),
+        ye:my_math.matrix([0],[1],[0]),
+        ze:my_math.matrix([0],[0],[1]),
         fov_deg:90,
         w:800,
         h:600,
@@ -54,16 +57,16 @@ var prot_Camera = {
         this.update();
     },
     moveCamBy:function(eye){
-        this.extr.eye = add(this.extr.eye,eye);
+        this.extr.eye = my_math.add(this.extr.eye,eye);
         this.update();
     },
     update:function(){
         this.intr.fov_rad = this.intr.fov_deg*Math.PI/180;
-        let partial = subtract(this.extr.eye,this.extr.center);
-        this.intr.ze=normalize(partial);//divide pela norma
-        partial = cross(this.extr.up,this.intr.ze);//crossproduct
-        this.intr.xe=normalize(partial);
-        this.intr.ye=cross(this.extr.ze,this.extr.xe);
+        let partial = my_math.add(this.extr.eye,my_math.multiply(-1,this.extr.center));
+        this.intr.ze=my_math.normalize(partial);//divide pela norma
+        partial = my_math.cross(this.extr.up,this.intr.ze);//crossproduct
+        this.intr.xe=my_math.normalize(partial);
+        this.intr.ye=my_math.cross(this.extr.ze,this.extr.xe);
         this.intr.df = this.intr.near;
         this.intr.altura = 2*this.intr.df*Math.tan(this.intr.fov_rad/2);
         this.intr.base = (this.intr.w/this.intr.h)*this.intr.altura;
@@ -89,17 +92,17 @@ var prot_Camera = {
     makeP:function(i,j){
         let d=makeD(i,j);
         function P(t){
-            return(add(this.extr.eye,multiply(-t,d)));
+            return(my_math.add(this.extr.eye,my_math.multiply(-t,d)));
         };
-        P.unit = normalize(mult(-1,d));
+        P.unit = my_math.normalize(mult(-1,d));
         return P;
     },
     makeD:function(i,j){
-        let local_z = multiply(-this.intr.df,this.intr.ze);
-        let local_y = multiply(this.intr.altura*(j/this.intr.h-1/2),this.intr.ye);
-        let local_x = multiply(this.intr.base*(i/this.intr.w-1/2),this.intr.xe);
-        let partial_sum = sum(local_x,local_y);
-        let d = sum(partial_sum,local_z);
+        let local_z = my_math.multiply(-this.intr.df,this.intr.ze);
+        let local_y = my_math.multiply(this.intr.altura*(j/this.intr.h-1/2),this.intr.ye);
+        let local_x = my_math.multiply(this.intr.base*(i/this.intr.w-1/2),this.intr.xe);
+        let partial_sum = my_math.add(local_x,local_y);
+        let d = my_math.add(partial_sum,local_z);
         return d;
     },
 
