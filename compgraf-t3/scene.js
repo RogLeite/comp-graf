@@ -1,6 +1,3 @@
-
-import * as my_math from 'mathjs';
-
 const STD={
     color:[1,1,1,1],
     difuse:[1,0,0,1],//red

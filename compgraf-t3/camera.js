@@ -1,6 +1,3 @@
-
-import * as my_math from 'mathjs';
-
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
@@ -20,27 +17,34 @@ const x=0;
 const y=1;
 const z=2;
 
-const m1 = my_math.matrix([[0,-1],
-                        [1,0]]);
-const m2 = my_math.matrix([[2,1],
-                        [1,2]]);
-const m3 = my_math.multiply(m1,m2);
+function testMatrix(){
+    const m1 = mat2.create();
+    mat2.set(m1,0,-1,1,0);
+    const m2 = mat2.create();
+    mat2.set(m2,2,1,1,2);
+    const m3 = mat2.create();
+    mat2.multiply(m3,m1,m2);
+    console.log(mat2.str(m3));
 
-console.log(m3);
-
+}
+function auxVet3_create(x,y,z){
+    let temp = vet3.create();
+    vet3.set(temp,x,y,z);
+    return temp;
+}
 
 var prot_Camera = {
     pxMatrix:[],
     extr:{
         scene:{},
-        eye:my_math.matrix([1],[1],[1]),
-        up:my_math.matrix([0],[1],[0]),
-        center:my_math.matrix([2],[2],[2]),
+        eye:auxVet3_create(1,1,1),
+        up:auxVet3_create(0,1,0),
+        center:auxVet3_create(2,2,2),
     },
     intr:{
-        xe:my_math.matrix([1],[0],[0]),
-        ye:my_math.matrix([0],[1],[0]),
-        ze:my_math.matrix([0],[0],[1]),
+        xe:auxVet3_create(1,0,0),
+        ye:auxVet3_create(0,1,0),
+        ze:auxVet3_create(0,0,1),
         fov_deg:90,
         w:800,
         h:600,
@@ -57,16 +61,17 @@ var prot_Camera = {
         this.update();
     },
     moveCamBy:function(eye){
-        this.extr.eye = my_math.add(this.extr.eye,eye);
+        vet3.add(this.extr.eye,this.extr.eye,eye);
         this.update();
     },
     update:function(){
         this.intr.fov_rad = this.intr.fov_deg*Math.PI/180;
-        let partial = my_math.add(this.extr.eye,my_math.multiply(-1,this.extr.center));
-        this.intr.ze=my_math.normalize(partial);//divide pela norma
-        partial = my_math.cross(this.extr.up,this.intr.ze);//crossproduct
-        this.intr.xe=my_math.normalize(partial);
-        this.intr.ye=my_math.cross(this.extr.ze,this.extr.xe);
+        let partial = vet3.create();
+        vet3.scaleAndAdd(partial,this.extr.eye,this.extr.center,-1);
+        vet3.normalize(this.intr.ze,partial);//divide pela norma
+        vet3.cross(partial,this.extr.up,this.intr.ze);//crossproduct
+        vet3.normalize(this.intr.xe,partial);
+        vet3.cross(this.intr.ye,this.extr.ze,this.extr.xe);
         this.intr.df = this.intr.near;
         this.intr.altura = 2*this.intr.df*Math.tan(this.intr.fov_rad/2);
         this.intr.base = (this.intr.w/this.intr.h)*this.intr.altura;
@@ -92,18 +97,26 @@ var prot_Camera = {
     makeP:function(i,j){
         let d=makeD(i,j);
         function P(t){
-            return(my_math.add(this.extr.eye,my_math.multiply(-t,d)));
+            let temp = vet3.create();
+            vet3.scaleAndAdd(temp,this.extr.eye,d,-t);
+            return temp;
         };
-        P.unit = my_math.normalize(mult(-1,d));
+        P.unit = vet3.create();
+        vet3.scale(P.unit,d,-1);
+        vet3.normalize(P.unit,P.unit);
         return P;
     },
     makeD:function(i,j){
-        let local_z = my_math.multiply(-this.intr.df,this.intr.ze);
-        let local_y = my_math.multiply(this.intr.altura*(j/this.intr.h-1/2),this.intr.ye);
-        let local_x = my_math.multiply(this.intr.base*(i/this.intr.w-1/2),this.intr.xe);
-        let partial_sum = my_math.add(local_x,local_y);
-        let d = my_math.add(partial_sum,local_z);
-        return d;
+        let local_z = vet3.create();
+        vet3.scale(local_z,this.intr.ze,-this.intr.df);
+        let local_y = vet3.create();
+        vet3.scale(local_y,this.intr.ye,this.intr.altura*(j/this.intr.h-1/2));
+        let local_x = vet3.create();//serve como retorno
+        vet3.multiply(local_x,this.intr.xe,this.intr.base*(i/this.intr.w-1/2));
+
+        my_math.add(local_x,local_x,local_y);
+        my_math.add(local_x,local_x,local_z);
+        return local_x;
     },
 
 };
