@@ -27,12 +27,11 @@ function testMatrix(){
     console.log(mat2.str(m3));
 
 }
-function auxVet3_create(x,y,z){
-    let temp = vet3.create();
-    vet3.set(temp,x,y,z);
-    return temp;
+function testVect3(){
+    const v2 = auxVet3_create(0,1,0);
+    const v1 = auxVet3_create(1,0,0);
+    console.log(vec3.dot(v1,v2));
 }
-
 var prot_Camera = {
     pxMatrix:[],
     extr:{
@@ -61,17 +60,17 @@ var prot_Camera = {
         this.update();
     },
     moveCamBy:function(eye){
-        vet3.add(this.extr.eye,this.extr.eye,eye);
+        vec3.add(this.extr.eye,this.extr.eye,eye);
         this.update();
     },
     update:function(){
         this.intr.fov_rad = this.intr.fov_deg*Math.PI/180;
-        let partial = vet3.create();
-        vet3.scaleAndAdd(partial,this.extr.eye,this.extr.center,-1);
-        vet3.normalize(this.intr.ze,partial);//divide pela norma
-        vet3.cross(partial,this.extr.up,this.intr.ze);//crossproduct
-        vet3.normalize(this.intr.xe,partial);
-        vet3.cross(this.intr.ye,this.extr.ze,this.extr.xe);
+        let partial = vec3.create();
+        vec3.scaleAndAdd(partial,this.extr.eye,this.extr.center,-1);
+        vec3.normalize(this.intr.ze,partial);//divide pela norma
+        vec3.cross(partial,this.extr.up,this.intr.ze);//crossproduct
+        vec3.normalize(this.intr.xe,partial);
+        vec3.cross(this.intr.ye,this.extr.ze,this.extr.xe);
         this.intr.df = this.intr.near;
         this.intr.altura = 2*this.intr.df*Math.tan(this.intr.fov_rad/2);
         this.intr.base = (this.intr.w/this.intr.h)*this.intr.altura;
@@ -97,22 +96,22 @@ var prot_Camera = {
     makeP:function(i,j){
         let d=makeD(i,j);
         function P(t){
-            let temp = vet3.create();
-            vet3.scaleAndAdd(temp,this.extr.eye,d,-t);
+            let temp = vec3.create();
+            vec3.scaleAndAdd(temp,this.extr.eye,d,-t);
             return temp;
         };
-        P.unit = vet3.create();
-        vet3.scale(P.unit,d,-1);
-        vet3.normalize(P.unit,P.unit);
+        P.unit = vec3.create();
+        vec3.scale(P.unit,d,-1);
+        vec3.normalize(P.unit,P.unit);
         return P;
     },
     makeD:function(i,j){
-        let local_z = vet3.create();
-        vet3.scale(local_z,this.intr.ze,-this.intr.df);
-        let local_y = vet3.create();
-        vet3.scale(local_y,this.intr.ye,this.intr.altura*(j/this.intr.h-1/2));
-        let local_x = vet3.create();//serve como retorno
-        vet3.multiply(local_x,this.intr.xe,this.intr.base*(i/this.intr.w-1/2));
+        let local_z = vec3.create();
+        vec3.scale(local_z,this.intr.ze,-this.intr.df);
+        let local_y = vec3.create();
+        vec3.scale(local_y,this.intr.ye,this.intr.altura*(j/this.intr.h-1/2));
+        let local_x = vec3.create();//serve como retorno
+        vec3.multiply(local_x,this.intr.xe,this.intr.base*(i/this.intr.w-1/2));
 
         my_math.add(local_x,local_x,local_y);
         my_math.add(local_x,local_x,local_z);

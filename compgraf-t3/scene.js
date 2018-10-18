@@ -5,7 +5,7 @@ const STD={
     ambient:[0,0,0,0],
     color_sphere:[1,0,0,1],//red
     color_box:[1,1,0,1],//yellow
-    origin:my_math.matrix([0],[0],[0]),
+    origin:auxVet3_create(0,0,0),
 };
 
 const prot_Scene = {
@@ -59,22 +59,28 @@ const prot_Sphere = {
     color_ambient:prot_Solid.ambient,
     color_specular:prot_Solid.specular,
     checkCollision:function(P,Origin,max_t){
-        let local_a = my_math.multiply(P.unit,P.unit);
-        let local_b = my_math.multiply(my_math.multiply(2,P.unit),my_math.add(Origin,my_math.multiply(-1,this.origin)));
-        let local_c = my_math.add(my_math.multiply(my_math.add(Origin,my_math.multiply(-1,this.origin)),my_math.add(Origin,my_math.multiply(-1,this.origin))),-Math.pow(this.radius,2));
+        let local_a = vec3.dot(P.unit,P.unit);
+        let partial_1 = vec3.create();
+        vec3.scaleAndAdd(partial_1,Origin,this.origin,-1);
+        let partial_2 = vec3.create();
+        vec3.scale(partial_2,P.unit,2);
+        let local_b = vec3.dot(partial_2,partial_1);
+        let local_c = vec3.dot(partial_1,partial_1)-Math.pow(this.radius,2);
         let delta = Math.pow(local_b,2) - 4*local_a*local_c;
         if(delta<0){
             return false;
         } else if(delta===0){
             let t1 = -local_b/(2*local_a);
-            let l_normal = l_math.add(P(t1),l_math.multiply(-1,this.origin));
-            l_normal = l_math.normalize(l_normal);
+            let l_normal = vec3.create();
+            vec3.scaleAndAdd(l_normal,P(t1),this.origin,-1);
+            vec3.normalize(l_normal,l_normal);
             return {obj:this,t:t1,normal:l_normal};
         }else{
             let t1 = -local_b-Math.sqrt(delta)/(2*local_a);
             let t2 = -local_b+Math.sqrt(delta)/(2*local_a);
-            let l_normal = l_math.add(P(Math.min(t1,t2)),l_math.multiply(-1,this.origin));
-            l_normal = l_math.normalize(l_normal);
+            let l_normal = vec3.create();
+            vec3.scaleAndAdd(l_normal,P(Math.min(t1,t2)),this.origin,-1);
+            vec3.normalize(l_normal,l_normal);
             return {obj:this,t:Math.min(t1,t2),normal:l_normal};
         }
     },

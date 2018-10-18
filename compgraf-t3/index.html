@@ -5,9 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Document</title>
-        <script src="auxiliar.js"></script>
-        <script src="glmatrix/dist/gl-matrix-min.js"></script>
+        <script src="glmatrix/dist/gl-matrix.js"></script>
+        <!-- <script src="glmatrix/src/gl-matrix/vec3.js"></script> -->
         <script src="solver.js"></script>
+        <script src="auxiliar.js"></script>
         <script src="scene.js"></script>
     </head>
     
@@ -15,6 +16,7 @@
         <div>
             <button onclick="paintCam(event)">PAINT CAM</button>
             <button onclick="testMatrix(event)">test matrix</button>
+            <button onclick="testVect3(event)">test vec3</button>
         </div>
         <canvas id="canvas"  width="800" height="600" style="background-color: black"></canvas>
         <script src="camera.js"></script>
