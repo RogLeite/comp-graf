@@ -5,7 +5,7 @@ const STD={
     ambient:[0,0,0,0],
     color_sphere:[1,0,0,1],//red
     color_box:[1,1,0,1],//yellow
-    origin:auxVet3_create(0,0,0),
+    origin:auxVec3_create(0,0,0),
 };
 
 const prot_Scene = {
@@ -16,13 +16,19 @@ const prot_Scene = {
         cam.extr.scene = this;
         this.cameras.push(cam);
     },
+    insertSolid:function(solid){
+        this.solids.push(solid);
+        solid.scene = this;
+    },
     trace:function(P,Origin,max_t){
         let obj = {obj:undefined,dist:max_t+1};
-        solids.forEach(function(element){
+        this.solids.forEach(function(element){
             let here = element.checkCollision(P,Origin,max_t);
             if(here){//se houve colisão
+                console.log("colisão com "+here.obj.name+" dist = "+here.dist);
                 if (here.dist<obj.dist){//se está mais proximo da camera
                     obj = here;
+                    console.log("esteve mais próximo");
                 }
             }
         });
@@ -39,6 +45,8 @@ class_Scene.prototype = prot_Scene;
 
 
 const prot_Solid = {
+    name:"prot_Solid",
+    scene:undefined,
     origin:STD.origin,
     color_difuse:STD.difuse,
     color_specular:STD.specular,
@@ -53,6 +61,8 @@ const prot_Solid = {
 }
 
 const prot_Sphere = {
+    name:"prot_Sphere",
+    scene:prot_Solid.scene,
     origin:prot_Solid.origin,
     radius:5,
     color_difuse:STD.color_sphere,
@@ -71,17 +81,20 @@ const prot_Sphere = {
             return false;
         } else if(delta===0){
             let t1 = -local_b/(2*local_a);
+            console.log("t1 = "+t1);
             let l_normal = vec3.create();
             vec3.scaleAndAdd(l_normal,P(t1),this.origin,-1);
             vec3.normalize(l_normal,l_normal);
-            return {obj:this,t:t1,normal:l_normal};
+            return {obj:this,dist:t1,normal:l_normal};
         }else{
             let t1 = -local_b-Math.sqrt(delta)/(2*local_a);
+            console.log("t1 = "+t1);
             let t2 = -local_b+Math.sqrt(delta)/(2*local_a);
+            console.log("t2 = "+t2);
             let l_normal = vec3.create();
             vec3.scaleAndAdd(l_normal,P(Math.min(t1,t2)),this.origin,-1);
             vec3.normalize(l_normal,l_normal);
-            return {obj:this,t:Math.min(t1,t2),normal:l_normal};
+            return {obj:this,dist:Math.min(t1,t2),normal:l_normal};//[[TODO]]Debug aqui, dist is NaN
         }
     },
     shade:function(P,t){
@@ -97,6 +110,7 @@ class_Sphere.prototype = prot_Sphere;
 
 
 const prot_Aligned_Box = {
+    scene:prot_Solid.scene,
     origin:prot_Solid.origin,
     //yu:l_math.matrix([0],[1],[0]),//y unitário
     //xz_du:l_math.matrix([1],[1],[1]),//diagonal do plano y=0(y do próprio retângulo)
