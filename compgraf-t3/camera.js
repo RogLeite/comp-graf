@@ -90,13 +90,13 @@ var prot_Camera = {
             }
         }
     },
-    makeD:function(i,j){//PROBLEMA AQUI
+    makeD:function(i,j){
         let local_z = vec3.create();
         vec3.scale(local_z,this.intr.ze,-this.intr.df);
         let local_y = vec3.create();
         vec3.scale(local_y,this.intr.ye,this.intr.altura*(j/this.intr.h-1/2));
         let local_x = vec3.create();//serve como retorno
-        vec3.multiply(local_x,this.intr.xe,this.intr.base*(i/this.intr.w-1/2));
+        vec3.scale(local_x,this.intr.xe,this.intr.base*(i/this.intr.w-1/2));
 
         vec3.add(local_x,local_x,local_y);
         vec3.add(local_x,local_x,local_z);
