@@ -69,13 +69,17 @@ const prot_Sphere = {
     color_ambient:prot_Solid.ambient,
     color_specular:prot_Solid.specular,
     checkCollision:function(P,Origin,max_t){
+        console.log("P.unit = "+P.unit);
         let local_a = vec3.dot(P.unit,P.unit);
+        console.log("local_a = "+local_a);
         let partial_1 = vec3.create();
-        vec3.scaleAndAdd(partial_1,Origin,this.origin,-1);
+        vec3.scaleAndAdd(partial_1,Origin,this.origin,-1);//(o-c)
         let partial_2 = vec3.create();
         vec3.scale(partial_2,P.unit,2);
         let local_b = vec3.dot(partial_2,partial_1);
+        console.log("local_b = "+local_b);
         let local_c = vec3.dot(partial_1,partial_1)-Math.pow(this.radius,2);
+        console.log("local_c = "+local_c);
         let delta = Math.pow(local_b,2) - 4*local_a*local_c;
         if(delta<0){
             return false;

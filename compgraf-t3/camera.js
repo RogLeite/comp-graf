@@ -81,6 +81,7 @@ var prot_Camera = {
             }
             for(let j=0;j<this.intr.h;j++){
                 let P = this.makeP(i,j);
+                console.log("in rayTrace: P.unit = "+P.unit);
                 let pixel = scene.trace(P,this.extr.eye,this.intr.far);
                 if(!this.pxMatrix[i][j]){
                     this.pxMatrix[i].push([]);
@@ -89,7 +90,7 @@ var prot_Camera = {
             }
         }
     },
-    makeD:function(i,j){
+    makeD:function(i,j){//PROBLEMA AQUI
         let local_z = vec3.create();
         vec3.scale(local_z,this.intr.ze,-this.intr.df);
         let local_y = vec3.create();
@@ -103,15 +104,19 @@ var prot_Camera = {
     },
     makeP:function(i,j){
         let d=this.makeD(i,j);
+        console.log("in makeP: d = "+d);
         let obj = this;
-        function P(t){
+        let P = function (t){
             let temp = vec3.create();
             vec3.scaleAndAdd(temp,obj.extr.eye,d,-t);
             return temp;
         };
         P.unit = vec3.create();
+        console.log("in makeP: P.unit = "+P.unit);
         vec3.scale(P.unit,d,-1);
+        console.log("in makeP: P.unit scaled = "+P.unit);
         vec3.normalize(P.unit,P.unit);
+        console.log("in makeP: P.unit normalized = "+P.unit);
         return P;
     },
 
@@ -131,8 +136,8 @@ function paintCam(evt){
     main_cam.extr.up = auxVec3_create(0,1,0);
     main_cam.intr.near = 30;
     main_cam.intr.far = 230;
-    main_cam.intr.w = 230;
-    main_cam.intr.h = 230;
+    main_cam.intr.w = 800;
+    main_cam.intr.h = 600;
     
     
     main_cam.update();
