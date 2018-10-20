@@ -6,12 +6,14 @@ const STD={
     color_sphere:[1,0,0,1],//red
     color_box:[1,1,0,1],//yellow
     origin:auxVec3_create(0,0,0),
+    background_color:[0,0,0,1],
 };
 
 const prot_Scene = {
     solids:[],
     cameras:[],
     lights:[],
+    background_color:STD.background_color,
     insertCam:function(cam){
         cam.extr.scene = this;
         this.cameras.push(cam);
@@ -25,14 +27,19 @@ const prot_Scene = {
         this.solids.forEach(function(element){
             let here = element.checkCollision(P,Origin,max_t);
             if(here){//se houve colisão
-                console.log("colisão com "+here.obj.name+" dist = "+here.dist);
+                //console.log("colisão com "+here.obj.name+" dist = "+here.dist);
                 if (here.dist<obj.dist){//se está mais proximo da camera
                     obj = here;
-                    console.log("esteve mais próximo");
+                    //console.log("esteve mais próximo");
                 }
             }
         });
-        return obj.shade(P,obj.dist);
+        if (obj.dist === max_t+1){//se nãoatingiu nada
+            return this.background_color;
+        }
+        else{
+            return obj.obj.shade(P,obj.dist);
+        }
     }
 
 };
@@ -69,32 +76,33 @@ const prot_Sphere = {
     color_ambient:prot_Solid.ambient,
     color_specular:prot_Solid.specular,
     checkCollision:function(P,Origin,max_t){
-        console.log("P.unit = "+P.unit);
+        //console.log("P.unit = "+P.unit);
         let local_a = vec3.dot(P.unit,P.unit);
-        console.log("local_a = "+local_a);
+        //console.log("local_a = "+local_a);
         let partial_1 = vec3.create();
         vec3.scaleAndAdd(partial_1,Origin,this.origin,-1);//(o-c)
         let partial_2 = vec3.create();
         vec3.scale(partial_2,P.unit,2);
         let local_b = vec3.dot(partial_2,partial_1);
-        console.log("local_b = "+local_b);
+        //console.log("local_b = "+local_b);
         let local_c = vec3.dot(partial_1,partial_1)-Math.pow(this.radius,2);
-        console.log("local_c = "+local_c);
+        //console.log("local_c = "+local_c);
         let delta = Math.pow(local_b,2) - 4*local_a*local_c;
+        //console.log("delta = "+delta);
         if(delta<0){
             return false;
         } else if(delta===0){
             let t1 = -local_b/(2*local_a);
-            console.log("t1 = "+t1);
+            //console.log("t1 = "+t1);
             let l_normal = vec3.create();
             vec3.scaleAndAdd(l_normal,P(t1),this.origin,-1);
             vec3.normalize(l_normal,l_normal);
             return {obj:this,dist:t1,normal:l_normal};
         }else{
             let t1 = -local_b-Math.sqrt(delta)/(2*local_a);
-            console.log("t1 = "+t1);
+            //console.log("t1 = "+t1);
             let t2 = -local_b+Math.sqrt(delta)/(2*local_a);
-            console.log("t2 = "+t2);
+            //console.log("t2 = "+t2);
             let l_normal = vec3.create();
             vec3.scaleAndAdd(l_normal,P(Math.min(t1,t2)),this.origin,-1);
             vec3.normalize(l_normal,l_normal);

@@ -19,13 +19,13 @@ function testMatrix(){
     mat2.set(m2,2,1,1,2);
     const m3 = mat2.create();
     mat2.multiply(m3,m1,m2);
-    console.log(mat2.str(m3));
+    //console.log(mat2.str(m3));
 
 }
 function testVect3(){
     const v2 = auxVec3_create(0,1,0);
     const v1 = auxVec3_create(1,0,0);
-    console.log(vec3.dot(v1,v2));
+    //console.log(vec3.dot(v1,v2));
 }
 
 var prot_Camera = {
@@ -81,12 +81,12 @@ var prot_Camera = {
             }
             for(let j=0;j<this.intr.h;j++){
                 let P = this.makeP(i,j);
-                console.log("in rayTrace: P.unit = "+P.unit);
+                //console.log("in rayTrace: P.unit = "+P.unit);
                 let pixel = scene.trace(P,this.extr.eye,this.intr.far);
                 if(!this.pxMatrix[i][j]){
                     this.pxMatrix[i].push([]);
                 }
-                pxMatrix[i][j] = pixel;
+                this.pxMatrix[i][j] = pixel;
             }
         }
     },
@@ -104,7 +104,7 @@ var prot_Camera = {
     },
     makeP:function(i,j){
         let d=this.makeD(i,j);
-        console.log("in makeP: d = "+d);
+        //console.log("in makeP: d = "+d);
         let obj = this;
         let P = function (t){
             let temp = vec3.create();
@@ -112,11 +112,11 @@ var prot_Camera = {
             return temp;
         };
         P.unit = vec3.create();
-        console.log("in makeP: P.unit = "+P.unit);
+        //console.log("in makeP: P.unit = "+P.unit);
         vec3.scale(P.unit,d,-1);
-        console.log("in makeP: P.unit scaled = "+P.unit);
+        //console.log("in makeP: P.unit scaled = "+P.unit);
         vec3.normalize(P.unit,P.unit);
-        console.log("in makeP: P.unit normalized = "+P.unit);
+        //console.log("in makeP: P.unit normalized = "+P.unit);
         return P;
     },
 
@@ -136,12 +136,13 @@ function paintCam(evt){
     main_cam.extr.up = auxVec3_create(0,1,0);
     main_cam.intr.near = 30;
     main_cam.intr.far = 230;
-    main_cam.intr.w = 800;
-    main_cam.intr.h = 600;
+    main_cam.intr.w = 400;
+    main_cam.intr.h = 300;
     
     
     main_cam.update();
     var main_scene = new class_Scene();
+    main_scene.background_color = [0.43,0.43,0.43,1];
     main_scene.insertCam(main_cam);
     
     var sphere1 = new class_Sphere();
