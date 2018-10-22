@@ -63,7 +63,7 @@ const prot_Solid = {
         return {obj:this,dist:t};
     },
     shade:function(P,t){
-        return this.difuse;
+        return this.color_difuse;
     }
 }
 
@@ -111,7 +111,7 @@ const prot_Sphere = {
     },
     shade:function(P,t){
         //[[TODO]] shader da esfera
-        return this.difuse;
+        return this.color_difuse;
 
     }
 };

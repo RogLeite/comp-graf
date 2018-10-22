@@ -128,7 +128,11 @@ function class_Camera(eye,up){
 class_Camera.prototype = prot_Camera;
 
 function paintCam(evt){
-    let newData = ctx.createImageData(ctx.getImageData(0,0,canvas.clientWidth,canvas.clientHeight));
+    let oldData = ctx.getImageData(0,0,canvas.clientWidth,canvas.clientHeight);
+    let newData = ctx.createImageData(oldData);
+    
+    // console.log("oldData = "+oldData);
+    // console.log("newData = "+newData);
 
     var main_cam = new class_Camera();
     main_cam.extr.eye = auxVec3_create(100,40,40);
@@ -153,12 +157,14 @@ function paintCam(evt){
     
     main_scene.insertSolid(sphere1);
     
-    
+    let once = true;
     main_cam.rayTrace();
     forEachPixel(newData,function(X,Y){
-            setPixel(newData,X,Y,main_cam.pxMatrix[X,Y]);
+            setPixel(newData,X,Y,pxFloatToDec(main_cam.pxMatrix[X][Y]));
         });
-    ctx.drawImage(newData,0,0,canvas.clientWidth,canvas.clientHeight);
+    ctx.putImageData(newData,0,0,0,0,canvas.clientWidth,canvas.clientHeight);
+    alert("ctx.putImageData done");
+   //console.log(main_cam.pxMatrix);
 }
 
 //Pixel operations+++++++++++++++++++++++++++++++++++++++++++++++++
@@ -169,12 +175,22 @@ function setPixel(imgData,X,Y,pixel){
     }
 }
 
+function getPixel(imgData,X,Y){
+    let pPx = [];
+    for (let i = 0; i < 4; i++) {
+        pPx.push(imgData.data[i + convertX(X,imgData) + convertY(Y,imgData)]);
+    }
+    return pPx;
+}
 function convertX(X,imgData){
     return X*4;
 }
 
 function convertY(Y,imgData){
     return Y*imgData.width*4;
+}
+function pxFloatToDec(px){
+    return [px[r]*255,px[g]*255,px[b]*255,px[a]*255];
 }
 function forEachPixel(imgData,apply,padding){
     let pad = 0;
