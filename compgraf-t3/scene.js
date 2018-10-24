@@ -121,11 +121,10 @@ function class_Sphere(){
 class_Sphere.prototype = prot_Sphere;
 
 
-const prot_Aligned_Box = {
+const prot_AlignedBox = {
     scene:prot_Solid.scene,
     origin:prot_Solid.origin,
-    //yu:l_math.matrix([0],[1],[0]),//y unitário
-    //xz_du:l_math.matrix([1],[1],[1]),//diagonal do plano y=0(y do próprio retângulo)
+    end:auxVec3_create(3,1,3),
     width:100,//dx
     height:5,//dy
     length:200,//dz
@@ -133,10 +132,39 @@ const prot_Aligned_Box = {
     color_ambient:prot_Solid.ambient,
     color_specular:prot_Solid.specular,
     checkCollision:function(P,Origin,max_t){
-        //let mod_diagonal = Math.sqrt(Math.pow(this.width,2)+Math.pow(this.length,2));
-        //let diagonal = l_math.multiply(xz_du,mod_diagonal);
         
         //[[TODO]] detecção de caixas alinhadas aos eixos
+        let enter_x = undefined;
+        let enter_y = undefined;
+        let enter_z = undefined;
+        let leave_x = undefined;
+        let leave_y = undefined;
+        let leave_z = undefined;
+        //testa em x
+        if(P.unit[x]<0){
+            enter_x = Math.min(this.origin[x],this.end[x]);
+            leave_x = Math.max(this.origin[x],this.end[x]);
+        }else if(P.unit[x]>0){
+            enter_x = Math.max(this.origin[x],this.end[x]);
+            leave_x = Math.min(this.origin[x],this.end[x]);
+        }else{
+            //remain undefined
+        }
+
+        //testa em y
+        //testa em z
     },
-    //[[TODO]] shade
+    shade:function(P,t){
+        //[[TODO]] shader da caixa
+        return this.color_difuse;
+
+    }
 };
+function class_AlignedBox(origin,end){
+    this.origin = origin;
+    this.end = end;
+    this.width = end[x]-origin[x];
+    this.height = end[y]-origin[y];
+    this.length = end[z]-origin[z];
+}
+class_AlignedBox.prototype = prot_AlignedBox;

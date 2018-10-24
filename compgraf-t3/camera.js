@@ -25,6 +25,10 @@ function testMatrix(){
 function testVect3(){
     const v2 = auxVec3_create(0,1,0);
     const v1 = auxVec3_create(1,0,0);
+    alert("v1 = "+v1+"\nv1[x]"+v1[x]+"\nv1[0]"+v1[0]+"\nv1[y]"+v1[y]+"\nv1[1]"+v1[1]);
+    // alert("v1[x]"+v1[x]);
+    // alert("v1[x]"+v1[x]);
+    // alert("v1[x]"+v1[x]);
     //console.log(vec3.dot(v1,v2));
 }
 
