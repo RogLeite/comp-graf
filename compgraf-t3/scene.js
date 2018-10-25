@@ -121,6 +121,7 @@ const prot_Sphere = {
     color_ambient:prot_Solid.ambient,
     color_specular:prot_Solid.specular,
     checkCollision:function(P,Origin,max_t){
+        //[[TODO]] o erro deve estar aqui, deve estar aparecendo a parte de trás da esfera, na verdade
         //console.log("P.unit = "+P.unit);
         let local_a = vec3.dot(P.unit,P.unit);
         //console.log("local_a = "+local_a);
@@ -155,7 +156,7 @@ const prot_Sphere = {
         }
     },
     shade:function(P,t,n){
-        //[[TODO]] shader da esfera
+        // shader da esfera
         let c = phong(this.scene,this,{origin:P(t),normal:n});
        // console.log("cor da esfera = "+c);
         return c;
