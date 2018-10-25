@@ -7,13 +7,38 @@ const STD={
     color_box:[1,1,0,1],//yellow
     origin:auxVec3_create(0,0,0),
     background_color:[0,0,0,1],
+    light:[0.8,0.8,0.8,1],
 };
+
+function phong(scene,obj,point){
+    //começar com difusa símples
+    let l_difuse=undefined;
+    //começar com uma luz
+    scene.lights.forEach(
+        function(elem){
+            let part = auxVec3_specialMultiply(elem.RGB_intensity,obj.color_difuse);
+            let L = vec3.create();
+            vec3.subtract(L,elem.origin,point.origin);
+            //console.log("part = "+part+"\nL = "+L);
+            vec3.normalize(L,L);
+            //console.log("normalized L = "+L);
+            vec3.multiply(L,point.normal,L);
+            //console.log("n.L = "+L);
+            vec3.multiply(part,part,L);
+            //console.log("part*L = "+part);
+            l_difuse = auxVec3_modulo(part);
+        }
+    );
+    //console.log("l_difuse = "+l_difuse);
+    return l_difuse;
+}
 
 const prot_Scene = {
     solids:[],
     cameras:[],
     lights:[],
     background_color:STD.background_color,
+    color_difuse:STD.background_color,
     insertCam:function(cam){
         cam.extr.scene = this;
         this.cameras.push(cam);
@@ -21,6 +46,10 @@ const prot_Scene = {
     insertSolid:function(solid){
         this.solids.push(solid);
         solid.scene = this;
+    },
+    insertLight:function(light){
+        this.lights.push(light);
+        light.scene = this;
     },
     trace:function(P,Origin,max_t){
         let obj = {obj:undefined,dist:max_t+1};
@@ -38,7 +67,7 @@ const prot_Scene = {
             return this.background_color;
         }
         else{
-            return obj.obj.shade(P,obj.dist);
+            return obj.obj.shade(P,obj.dist,obj.normal);
         }
     }
 
@@ -49,6 +78,22 @@ function class_Scene(){
 }
 
 class_Scene.prototype = prot_Scene;
+
+
+
+
+
+
+const prot_Light = {
+    name:"prot_Light",
+    scene:undefined,
+    origin:STD.origin,
+    RGB_intensity:STD.light,
+};
+function class_Light(){
+    
+}
+class_Light.prototype = prot_Light;
 
 
 const prot_Solid = {
@@ -62,7 +107,7 @@ const prot_Solid = {
         let t=1;
         return {obj:this,dist:t};
     },
-    shade:function(P,t){
+    shade:function(P,t,normal){
         return this.color_difuse;
     }
 }
@@ -106,13 +151,14 @@ const prot_Sphere = {
             let l_normal = vec3.create();
             vec3.scaleAndAdd(l_normal,P(Math.min(t1,t2)),this.origin,-1);
             vec3.normalize(l_normal,l_normal);
-            return {obj:this,dist:Math.min(t1,t2),normal:l_normal};//[[TODO]]Debug aqui, dist is NaN
+            return {obj:this,dist:Math.min(t1,t2),normal:l_normal};
         }
     },
-    shade:function(P,t){
+    shade:function(P,t,n){
         //[[TODO]] shader da esfera
-        return this.color_difuse;
-
+        let c = phong(this.scene,this,{origin:P(t),normal:n});
+       // console.log("cor da esfera = "+c);
+        return c;
     }
 };
 function class_Sphere(){
@@ -150,11 +196,12 @@ const prot_AlignedBox = {
         }else{
             //remain undefined
         }
+        
 
         //testa em y
         //testa em z
     },
-    shade:function(P,t){
+    shade:function(P,t,normal){
         //[[TODO]] shader da caixa
         return this.color_difuse;
 

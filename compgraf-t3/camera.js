@@ -87,6 +87,9 @@ var prot_Camera = {
                 let P = this.makeP(i,j);
                 //console.log("in rayTrace: P.unit = "+P.unit);
                 let pixel = scene.trace(P,this.extr.eye,this.intr.far);
+                // if(pixel!==scene.background_color){
+                //     console.log("pixel = "+pixel);
+                // }
                 if(!this.pxMatrix[i][j]){
                     this.pxMatrix[i].push([]);
                 }
@@ -161,10 +164,22 @@ function paintCam(evt){
     
     main_scene.insertSolid(sphere1);
     
+    var light1 = new class_Light()
+    light1.name = "light1";
+    light1.origin = auxVec3_create(60,120,40);
+
+    main_scene.insertLight(light1);
+
     let once = true;
     main_cam.rayTrace();
+    let px = undefined;
     forEachPixel(newData,function(X,Y){
-            setPixel(newData,X,Y,pxFloatToDec(main_cam.pxMatrix[X][Y]));
+           px = main_cam.pxMatrix[X][Y];
+           // if(px===undefined){console.log("X="+X+"\nY="+Y);}
+        //    if(px!==main_scene.background_color){
+        //        console.log("px="+pxFloatToDec(px));
+        //    }
+            setPixel(newData,X,Y,pxFloatToDec(px));
         });
     ctx.putImageData(newData,0,0,0,0,canvas.clientWidth,canvas.clientHeight);
     alert("ctx.putImageData done");
@@ -194,7 +209,9 @@ function convertY(Y,imgData){
     return Y*imgData.width*4;
 }
 function pxFloatToDec(px){
-    return [px[r]*255,px[g]*255,px[b]*255,px[a]*255];
+    let loc = px[a];
+    if(!loc){loc = 1};
+    return [px[r]*255,px[g]*255,px[b]*255,loc*255];
 }
 function forEachPixel(imgData,apply,padding){
     let pad = 0;
