@@ -11,3 +11,32 @@ function auxVec3_specialMultiply(v1,v2){
 function auxVec3_modulo(v){
     return auxVec3_create(Math.abs(v[0]),Math.abs(v[1]),Math.abs(v[2]));
 }
+
+function isInRect(o1,do1,o2,do2){//o* = ponto-inicio
+    return((o1>0&&o1<do1)&&(o2>0&&o2<do2));
+}
+function testRecCollision(o,P,Origin,x,y,z){
+    let enter = undefined;
+    let l_normal = auxVec3_create(0,0,0);
+    if(P.unit[x]<0){
+        enter = Math.min(o.origin[x],o.end[x]);
+        l_normal[x] = -1;
+        leave_x = Math.max(o.origin[x],o.end[x]);
+    }else if(P.unit[x]>0){
+        enter = Math.max(o.origin[x],o.end[x]);
+        l_normal[x] = 1;
+        leave_x = Math.min(o.origin[x],o.end[x]);
+    }else{
+        //remain undefined
+    }
+    let point_x = undefined;
+    if (enter){
+        point_x = vec3.create();
+        vec3.scale(point_x,P.unit,(enter-Origin[x])/P.unit[x]);
+        if(isInRect(point_x[y]-o.origin[y],point_x[z]-o.origin[z],o.height,o.length)){
+            return {obj:o,dist:vec3.length(point_x),normal:l_normal};
+        }
+    }
+    return false;
+
+}

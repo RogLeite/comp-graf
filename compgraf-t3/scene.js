@@ -4,7 +4,7 @@ const STD={
     specular:[1,1,1,1],
     ambient:[0,0,0,0],
     color_sphere:[1,0,0,1],//red
-    color_box:[1,1,0,1],//yellow
+    color_box:[0.7,0.7,0,1],//yellow
     origin:auxVec3_create(0,0,0),
     background_color:[0,0,0,1],
     light:[0.8,0.8,0.8,1],
@@ -181,30 +181,25 @@ const prot_AlignedBox = {
     checkCollision:function(P,Origin,max_t){
         
         //[[TODO]] detecção de caixas alinhadas aos eixos
-        let enter_x = undefined;
-        let enter_y = undefined;
-        let enter_z = undefined;
-        let leave_x = undefined;
-        let leave_y = undefined;
-        let leave_z = undefined;
-        //testa em x
-        if(P.unit[x]<0){
-            enter_x = Math.min(this.origin[x],this.end[x]);
-            leave_x = Math.max(this.origin[x],this.end[x]);
-        }else if(P.unit[x]>0){
-            enter_x = Math.max(this.origin[x],this.end[x]);
-            leave_x = Math.min(this.origin[x],this.end[x]);
-        }else{
-            //remain undefined
-        }
-        
 
+        //testa em x
+        let result = testRecCollision(this,P,Origin,x,y,z);
+        if(result){
+            return result;
+        }
         //testa em y
+        result = testRecCollision(this,P,Origin,y,z,x);
+        if(result){
+            return result;
+        }
         //testa em z
+        result = testRecCollision(this,P,Origin,z,x,y);
+        return result;
     },
-    shade:function(P,t,normal){
+    shade:function(P,t,n){
         //[[TODO]] shader da caixa
-        return this.color_difuse;
+        let c = phong(this.scene,this,{origin:P(t),normal:n});
+        return c;
 
     }
 };

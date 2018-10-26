@@ -134,57 +134,6 @@ function class_Camera(eye,up){
 }
 class_Camera.prototype = prot_Camera;
 
-function paintCam(evt){
-    let oldData = ctx.getImageData(0,0,canvas.clientWidth,canvas.clientHeight);
-    let newData = ctx.createImageData(oldData);
-    
-    // console.log("oldData = "+oldData);
-    // console.log("newData = "+newData);
-
-    var main_cam = new class_Camera();
-    main_cam.extr.eye = auxVec3_create(100,40,40);
-    main_cam.extr.center = auxVec3_create(0,0,0);
-    main_cam.extr.up = auxVec3_create(0,1,0);
-    main_cam.intr.near = 30;
-    main_cam.intr.far = 230;
-    main_cam.intr.w = 400;
-    main_cam.intr.h = 300;
-    
-    
-    main_cam.update();
-    var main_scene = new class_Scene();
-    main_scene.background_color = [0.43,0.43,0.43,1];
-    main_scene.insertCam(main_cam);
-    
-    var sphere1 = new class_Sphere();
-    sphere1.origin = auxVec3_create(0,20,0);
-    sphere1.radius = 25;
-    sphere1.color_difuse = [0,0,1,1];
-    sphere1.name = "sphere1";
-    
-    main_scene.insertSolid(sphere1);
-    
-    var light1 = new class_Light()
-    light1.name = "light1";
-    light1.origin = auxVec3_create(60,120,40);
-
-    main_scene.insertLight(light1);
-
-    let once = true;
-    main_cam.rayTrace();
-    let px = undefined;
-    forEachPixel(newData,function(X,Y){
-           px = main_cam.pxMatrix[X][Y];
-           // if(px===undefined){console.log("X="+X+"\nY="+Y);}
-        //    if(px!==main_scene.background_color){
-        //        console.log("px="+pxFloatToDec(px));
-        //    }
-            setPixel(newData,X,Y,pxFloatToDec(px));
-        });
-    ctx.putImageData(newData,0,0,0,0,canvas.clientWidth,canvas.clientHeight);
-    alert("ctx.putImageData done");
-   //console.log(main_cam.pxMatrix);
-}
 
 //Pixel operations+++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -226,3 +175,69 @@ function forEachPixel(imgData,apply,padding){
 }
 
 //--------------------------------------------------------
+
+
+
+
+function paintCam(evt){
+    let oldData = ctx.getImageData(0,0,canvas.clientWidth,canvas.clientHeight);
+    let newData = ctx.createImageData(oldData);
+    
+    // console.log("oldData = "+oldData);
+    // console.log("newData = "+newData);
+
+    var main_cam = new class_Camera();
+    main_cam.extr.eye = auxVec3_create(100,40,40);
+    main_cam.extr.center = auxVec3_create(0,0,0);
+    main_cam.extr.up = auxVec3_create(0,1,0);
+    main_cam.intr.near = 30;
+    main_cam.intr.far = 230;
+    main_cam.intr.w = 400;
+    main_cam.intr.h = 300;
+    
+    
+    main_cam.update();
+    var main_scene = new class_Scene();
+    main_scene.background_color = [0.43,0.43,0.43,1];
+    main_scene.insertCam(main_cam);
+    
+    var sphere1 = new class_Sphere();
+    sphere1.origin = auxVec3_create(0,20,0);
+    sphere1.radius = 25;
+    sphere1.color_difuse = [0,0,1,1];
+    sphere1.name = "sphere1";
+    
+    main_scene.insertSolid(sphere1);
+
+
+    var box1 = new class_AlignedBox(auxVec3_create(-80,-50,-50),auxVec3_create(50,-45,50));
+    box1.name = "box1";
+    
+    main_scene.insertSolid(box1);
+    
+    var box2 = new class_AlignedBox(auxVec3_create(-80,-50,-60),auxVec3_create(50,50,-50));
+    box2.name = "box2";
+    
+    main_scene.insertSolid(box2);
+    
+    var light1 = new class_Light()
+    light1.name = "light1";
+    light1.origin = auxVec3_create(60,120,40);
+
+    main_scene.insertLight(light1);
+
+    let once = true;
+    main_cam.rayTrace();
+    let px = undefined;
+    forEachPixel(newData,function(X,Y){
+           px = main_cam.pxMatrix[X][Y];
+           // if(px===undefined){console.log("X="+X+"\nY="+Y);}
+        //    if(px!==main_scene.background_color){
+        //        console.log("px="+pxFloatToDec(px));
+        //    }
+            setPixel(newData,X,Y,pxFloatToDec(px));
+        });
+    ctx.putImageData(newData,0,0,0,0,canvas.clientWidth,canvas.clientHeight);
+    alert("ctx.putImageData done");
+   //console.log(main_cam.pxMatrix);
+}
