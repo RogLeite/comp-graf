@@ -15,16 +15,13 @@ function phong(scene,obj,point){
     let l_difuse=undefined;
     //começar com uma luz
     scene.lights.forEach(
-        function(elem){
-            let part = auxVec3_specialMultiply(elem.RGB_intensity,obj.color_difuse);
+        function(light_elem){
+            let part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_difuse);
             let L = vec3.create();
-            vec3.subtract(L,elem.origin,point.origin);
+            vec3.subtract(L,light_elem.origin,point.origin);
             //console.log("part = "+part+"\nL = "+L);
             vec3.normalize(L,L);
-            //console.log("normalized L = "+L);
-            vec3.multiply(L,point.normal,L);
-            //console.log("n.L = "+L);
-            vec3.multiply(part,part,L);
+            vec3.scale(part,part,vec3.dot(point.normal,L));
             //console.log("part*L = "+part);
             l_difuse = auxVec3_modulo(part);
         }
@@ -126,7 +123,7 @@ const prot_Sphere = {
         let local_a = vec3.dot(P.unit,P.unit);
         //console.log("local_a = "+local_a);
         let partial_1 = vec3.create();
-        vec3.scaleAndAdd(partial_1,Origin,this.origin,-1);//(o-c)
+        vec3.sub(partial_1,Origin,this.origin);//(o-c)
         let partial_2 = vec3.create();
         vec3.scale(partial_2,P.unit,2);
         let local_b = vec3.dot(partial_2,partial_1);
@@ -141,7 +138,7 @@ const prot_Sphere = {
             let t1 = -local_b/(2*local_a);
             //console.log("t1 = "+t1);
             let l_normal = vec3.create();
-            vec3.scaleAndAdd(l_normal,P(t1),this.origin,-1);
+            vec3.sub(l_normal,P(t1),this.origin);
             vec3.normalize(l_normal,l_normal);
             return {obj:this,dist:t1,normal:l_normal};
         }else{
@@ -150,15 +147,16 @@ const prot_Sphere = {
             let t2 = -local_b+Math.sqrt(delta)/(2*local_a);
             //console.log("t2 = "+t2);
             let l_normal = vec3.create();
-            vec3.scaleAndAdd(l_normal,P(Math.min(t1,t2)),this.origin,-1);
+            vec3.sub(l_normal,P(Math.min(t1,t2)),this.origin);
             vec3.normalize(l_normal,l_normal);
             return {obj:this,dist:Math.min(t1,t2),normal:l_normal};
         }
     },
     shade:function(P,t,n){
         // shader da esfera
-        let c = phong(this.scene,this,{origin:P(t),normal:n});
-       // console.log("cor da esfera = "+c);
+        let p = phong(this.scene,this,{origin:P(t),normal:n});
+        let c = [p[r],p[g],p[b],1];
+        console.log("cor da esfera = "+c);
         return c;
     }
 };

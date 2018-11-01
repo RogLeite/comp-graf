@@ -1,7 +1,7 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
-
+var printed = 100;
 const r = 0;
 const g = 1;
 const b = 2;
@@ -55,24 +55,35 @@ var prot_Camera = {
         this.extr.up = up;
         this.update();
     },
+    moveEyeTo:function(eye){
+        this.extr.eye = eye;
+        this.update();
+    },
+    moveEyeBy:function(eye){
+        vec3.add(this.extr.eye,this.extr.eye,eye);
+        this.update();
+    },
     moveCamTo:function(eye){
         this.extr.eye = eye;
+        this.extr.center = center;
         this.update();
     },
     moveCamBy:function(eye){
         vec3.add(this.extr.eye,this.extr.eye,eye);
+        vec3.add(this.extr.center,this.extr.center,eye);
         this.update();
     },
     update:function(){
         this.intr.fov_rad = this.intr.fov_deg*Math.PI/180;
         let partial = vec3.create();
-        vec3.scaleAndAdd(partial,this.extr.eye,this.extr.center,-1);
+        vec3.sub(partial,this.extr.eye,this.extr.center);
         vec3.normalize(this.intr.ze,partial);
         vec3.cross(partial,this.extr.up,this.intr.ze);
         vec3.normalize(this.intr.xe,partial);
         vec3.cross(this.intr.ye,this.intr.ze,this.intr.xe);
+        vec3.normalize(this.intr.ye,this.intr.ye);
         this.intr.df = this.intr.near;
-        this.intr.altura = 2*this.intr.df*Math.tan(this.intr.fov_rad/2);
+        this.intr.altura = 2*this.intr.df*Math.tan(this.intr.fov_deg/2);
         this.intr.base = (this.intr.w/this.intr.h)*this.intr.altura;
     },
     rayTrace:function(){
@@ -93,6 +104,9 @@ var prot_Camera = {
                 if(!this.pxMatrix[i][j]){
                     this.pxMatrix[i].push([]);
                 }
+                // if(pixel.len<4){
+                //     pixel.push(1);
+                // }
                 this.pxMatrix[i][j] = pixel;
             }
         }
@@ -107,6 +121,12 @@ var prot_Camera = {
 
         vec3.add(local_x,local_x,local_y);
         vec3.add(local_x,local_x,local_z);
+        //vec3.normalize(local_x,local_x);
+        // if (printed>0){
+        //     console.log("xe = "+this.intr.base*(i/this.intr.w-1/2)+"\nye = "+this.intr.altura*(j/this.intr.h-1/2)+"\nze = -"+this.intr.df);
+        //     printed = 0;
+        // }
+
         return local_x;
     },
     makeP:function(i,j){
@@ -115,14 +135,12 @@ var prot_Camera = {
         let obj = this;
         let P = function (t){
             let temp = vec3.create();
-            vec3.scaleAndAdd(temp,obj.extr.eye,d,-t);
+            vec3.scale(temp,d,t);
+            vec3.subtract(temp,obj.extr.eye,temp);
             return temp;
         };
         P.unit = vec3.create();
-        //console.log("in makeP: P.unit = "+P.unit);
-        vec3.scale(P.unit,d,-1);
-        //console.log("in makeP: P.unit scaled = "+P.unit);
-        vec3.normalize(P.unit,P.unit);
+        vec3.normalize(P.unit,d);
         //console.log("in makeP: P.unit normalized = "+P.unit);
         return P;
     },
@@ -223,6 +241,7 @@ function paintCam(evt){
     var light1 = new class_Light()
     light1.name = "light1";
     light1.origin = auxVec3_create(60,120,40);
+    light1.RGB_intensity = [0.8,0.8,0.8,1];
 
     main_scene.insertLight(light1);
 
