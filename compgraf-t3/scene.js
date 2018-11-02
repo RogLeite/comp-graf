@@ -149,14 +149,16 @@ const prot_Sphere = {
             let l_normal = vec3.create();
             vec3.sub(l_normal,P(Math.min(t1,t2)),this.origin);
             vec3.normalize(l_normal,l_normal);
+            //console.log("normal da esfera = "+l_normal);
             return {obj:this,dist:Math.min(t1,t2),normal:l_normal};
         }
     },
     shade:function(P,t,n){
         // shader da esfera
+        //console.log("\t e = "+n);
         let p = phong(this.scene,this,{origin:P(t),normal:n});
         let c = [p[r],p[g],p[b],1];
-        console.log("cor da esfera = "+c);
+        //console.log("cor da esfera = "+c);
         return c;
     }
 };
@@ -181,22 +183,23 @@ const prot_AlignedBox = {
         //[[TODO]] detecção de caixas alinhadas aos eixos
 
         //testa em x
-        let result = testRecCollision(this,P,Origin,x,y,z);
-        if(result){
-            return result;
-        }
+        let result = testRecCollision(this,P,Origin,x,y,z,this.height,this.length);
+        // if(result){
+        //     return result;
+        // }
         //testa em y
-        result = testRecCollision(this,P,Origin,y,z,x);
-        if(result){
-            return result;
-        }
-        //testa em z
-        result = testRecCollision(this,P,Origin,z,x,y);
+        // result = testRecCollision(this,P,Origin,y,z,x,this.length,this.width);
+        // if(result){
+        //     return result;
+        // }
+        // //testa em z
+        // result = testRecCollision(this,P,Origin,z,x,y,this.width,this.height);
         return result;
     },
     shade:function(P,t,n){
         //[[TODO]] shader da caixa
-        let c = phong(this.scene,this,{origin:P(t),normal:n});
+        let p = phong(this.scene,this,{origin:P(t),normal:n});
+        let c = [p[r],p[g],p[b],1];
         return c;
 
     }

@@ -210,13 +210,13 @@ function paintCam(evt){
     main_cam.extr.up = auxVec3_create(0,1,0);
     main_cam.intr.near = 30;
     main_cam.intr.far = 230;
-    main_cam.intr.w = 400;
-    main_cam.intr.h = 300;
+    main_cam.intr.w = 800;
+    main_cam.intr.h = 600;
     
     
     main_cam.update();
     var main_scene = new class_Scene();
-    main_scene.background_color = [0.43,0.43,0.43,1];
+    main_scene.background_color = [0,0,0,1];
     main_scene.insertCam(main_cam);
     
     var sphere1 = new class_Sphere();
@@ -228,13 +228,44 @@ function paintCam(evt){
     main_scene.insertSolid(sphere1);
 
 
-    var box1 = new class_AlignedBox(auxVec3_create(-80,-50,-50),auxVec3_create(50,-45,50));
-    box1.name = "box1";
+    var point1 = new class_Sphere();
+    point1.origin = auxVec3_create(-80,-50,-50);
+    point1.radius = 1;
+    point1.color_difuse = [1,0,1,1];
+    point1.name = "point1";
     
-    main_scene.insertSolid(box1);
+    main_scene.insertSolid(point1);
+
+    var point2 = new class_Sphere();
+    point2.origin = auxVec3_create(50,-45,50);
+    point2.radius = 1;
+    point2.color_difuse = [1,0,1,1];
+    point2.name = "point2";
     
-    var box2 = new class_AlignedBox(auxVec3_create(-80,-50,-60),auxVec3_create(50,50,-50));
-    box2.name = "box2";
+    main_scene.insertSolid(point2);
+
+    var point3 = new class_Sphere();
+    point3.origin = auxVec3_create(-80,-50,-60);
+    point3.radius = 1;
+    point3.color_difuse = [0,1,1,1];
+    point3.name = "point3";
+    
+    main_scene.insertSolid(point3);
+
+    var point4 = new class_Sphere();
+    point4.origin = auxVec3_create(50,50,-50);
+    point4.radius = 1;
+    point4.color_difuse = [0,1,1,1];
+    point4.name = "point2";
+    
+    main_scene.insertSolid(point4);
+     var box1 = new class_AlignedBox(auxVec3_create(-80,-50,-50),auxVec3_create(50,-45,50));
+     box1.name = "box1";
+    
+     main_scene.insertSolid(box1);
+    
+     var box2 = new class_AlignedBox(auxVec3_create(-80,-50,-60),auxVec3_create(50,50,-50));
+     box2.name = "box2";
     
     main_scene.insertSolid(box2);
     
