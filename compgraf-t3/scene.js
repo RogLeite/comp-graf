@@ -10,6 +10,7 @@ const STD={
     light:[0.8,0.8,0.8,1],
 };
 
+var printed = 100;
 function phong(scene,obj,point){
     //começar com difusa símples
     let l_difuse=undefined;
@@ -55,6 +56,10 @@ const prot_Scene = {
             if(here){//se houve colisão
                 //console.log("colisão com "+here.obj.name+" dist = "+here.dist);
                 if (here.dist<obj.dist){//se está mais proximo da camera
+                    // if(printed>0&&obj.obj){
+                    //     console.log(here.obj.name+" está mais próximo que "+obj.obj.name);
+                    //     printed--;
+                    // }
                     obj = here;
                     //console.log("esteve mais próximo");
                 }
@@ -178,28 +183,29 @@ const prot_AlignedBox = {
     color_difuse:STD.color_box,
     color_ambient:prot_Solid.ambient,
     color_specular:prot_Solid.specular,
-    checkCollision:function(P,Origin,max_t){
+    checkCollision:function(pnt,Origin,max_t){
         
         //[[TODO]] detecção de caixas alinhadas aos eixos
 
         //testa em x
-        let result = testRecCollision(this,P,Origin,x,y,z,this.height,this.length);
-        // if(result){
-        //     return result;
-        // }
+        let result = testRecCollision(this,pnt,Origin,x,y,z,this.height,this.length);
+        if(result){
+            return result;
+        }
         //testa em y
-        // result = testRecCollision(this,P,Origin,y,z,x,this.length,this.width);
-        // if(result){
-        //     return result;
-        // }
-        // //testa em z
-        // result = testRecCollision(this,P,Origin,z,x,y,this.width,this.height);
+        result = testRecCollision(this,pnt,Origin,y,z,x,this.length,this.width);
+        if(result){
+            return result;
+        }
+        //testa em z
+        result = testRecCollision(this,pnt,Origin,z,x,y,this.width,this.height);
         return result;
     },
     shade:function(P,t,n){
         //[[TODO]] shader da caixa
         let p = phong(this.scene,this,{origin:P(t),normal:n});
         let c = [p[r],p[g],p[b],1];
+        //c = this.color_difuse;
         return c;
 
     }

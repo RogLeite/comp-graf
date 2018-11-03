@@ -12,27 +12,27 @@ function auxVec3_modulo(v){
     return auxVec3_create(Math.abs(v[0]),Math.abs(v[1]),Math.abs(v[2]));
 }
 
-function isInRect(o1,do1,o2,do2){//o* = ponto-inicio
-    return((o1>0&&o1<do1)&&(o2>0&&o2<do2));
+function isInRect(ox,oy,o1,o2,do1,do2){//o* = ponto-inicio
+    return((ox>=o1&&ox<=o1+do1)&&(oy>=o2&&oy<=o2+do2));
 }
-function testRecCollision(o,P,Origin,x,y,z,height,length){
+function testRecCollision(o,pnt,Origin,i,j,k,height,length){
     let enter = undefined;
     let l_normal = auxVec3_create(0,0,0);
-    if(P.unit[x]<0){
-        enter = o.end[x];
-        l_normal[x] = 1;
-    }else if(P.unit[x]>0){
-        enter = o.origin[x];
-        l_normal[x] = -1;
+    if(pnt.unit[i]<0){
+        enter = o.end;
+        l_normal[i] = 1;
+    }else if(pnt.unit>0){
+        enter = o.origin;
+        l_normal[i] = -1;
     }else{
         //remain undefined
     }
-    let point_x = undefined;
+    let point_i = undefined;
     if (enter){
-        point_x = vec3.create();
-        vec3.scale(point_x,P.unit,(enter-Origin[x])/P.unit[x]);
-        if(isInRect(point_x[y]-o.origin[y],point_x[z]-o.origin[z],height,length)){
-            return {obj:o,dist:vec3.length(point_x),normal:l_normal};//[[TODO]]tem erro aqui, esse dist ta errado
+        point_i = vec3.create();
+        vec3.scale(point_i,pnt.unit,(enter[i]-Origin[i])/pnt.unit[i]);
+        if(isInRect(point_i[j]+Origin[j],point_i[k]+Origin[k],o.origin[j],o.origin[k],height,length)){
+            return {obj:o,dist:pnt.getT(point_i),normal:l_normal};
         }
     }
     return false;
