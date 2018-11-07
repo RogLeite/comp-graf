@@ -95,7 +95,6 @@ var prot_Camera = {
             }
             for(let j=0;j<this.intr.h;j++){
                 let P = this.makeP(i,j);
-                //console.log("in rayTrace: P.unit = "+P.unit);
                 let pixel = scene.trace(P,this.extr.eye,this.intr.far);
                 // if(pixel!==scene.background_color){
                 //     console.log("pixel = "+pixel);
@@ -135,13 +134,14 @@ var prot_Camera = {
         let P = function (t){
             let temp = vec3.create();
             vec3.scale(temp,d,t);
-            vec3.subtract(temp,obj.extr.eye,temp);
+            vec3.add(temp,temp,obj.extr.eye);
             return temp;
         };
         P.unit = vec3.create();
         vec3.normalize(P.unit,d);
+        P.d = d;
         P.getT = function(p){
-            return vec3.length(p)/vec3.length(d);
+            return vec3.length(p)/vec3.length(this.d);
         };
         //console.log("in makeP: P.unit normalized = "+P.unit);
         return P;
@@ -218,7 +218,7 @@ function paintCam(evt){
     
     main_cam.update();
     var main_scene = new class_Scene();
-    main_scene.background_color = [0,0,0,1];
+    main_scene.background_color = [0.45,0.45,0.45,1];
     main_scene.insertCam(main_cam);
     
     var sphere1 = new class_Sphere();
@@ -230,44 +230,12 @@ function paintCam(evt){
     main_scene.insertSolid(sphere1);
 
 
-    var point1 = new class_Sphere();
-    point1.origin = auxVec3_create(-80,-50,-50);
-    point1.radius = 1;
-    point1.color_difuse = [1,0,1,1];
-    point1.name = "point1";
-    
-    main_scene.insertSolid(point1);
-
-    var point2 = new class_Sphere();
-    point2.origin = auxVec3_create(50,-45,50);
-    point2.radius = 1;
-    point2.color_difuse = [1,0,1,1];
-    point2.name = "point2";
-    
-    main_scene.insertSolid(point2);
 
     var box1 = new class_AlignedBox(auxVec3_create(-80,-50,-50),auxVec3_create(50,-45,50));
     box1.name = "box1";
 
     main_scene.insertSolid(box1);
     
-
-    var point3 = new class_Sphere();
-    point3.origin = auxVec3_create(-80,-50,-60);
-    point3.radius = 1;
-    point3.color_difuse = [0,1,1,1];
-    point3.name = "point3";
-    
-    main_scene.insertSolid(point3);
-
-    var point4 = new class_Sphere();
-    point4.origin = auxVec3_create(50,50,-50);
-    point4.radius = 1;
-    point4.color_difuse = [0,1,1,1];
-    point4.name = "point4";
-    
-    main_scene.insertSolid(point4);
-
     var box2 = new class_AlignedBox(auxVec3_create(-80,-50,-60),auxVec3_create(50,50,-50));
     box2.name = "box2";
 
@@ -275,7 +243,7 @@ function paintCam(evt){
     
     var light1 = new class_Light()
     light1.name = "light1";
-    light1.origin = auxVec3_create(60,120,40);
+    light1.origin = auxVec3_create(60,120,50);
     light1.RGB_intensity = [0.8,0.8,0.8,1];
 
     main_scene.insertLight(light1);
@@ -289,8 +257,8 @@ function paintCam(evt){
         //    if(px!==main_scene.background_color){
         //        console.log("px="+pxFloatToDec(px));
         //    }
-            //setPixel(newData,X,newData.height-Y,pxFloatToDec(px));
-            setPixel(newData,X,Y,pxFloatToDec(px));
+            setPixel(newData,X,newData.height-Y,pxFloatToDec(px));
+            //setPixel(newData,X,Y,pxFloatToDec(px));
         });
     ctx.putImageData(newData,0,0,0,0,canvas.clientWidth,canvas.clientHeight);
     alert("ctx.putImageData done");

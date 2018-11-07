@@ -30,9 +30,10 @@ function testRecCollision(o,pnt,Origin,i,j,k,height,length){
     let point_i = undefined;
     if (enter){
         point_i = vec3.create();
-        vec3.scale(point_i,pnt.unit,(enter[i]-Origin[i])/pnt.unit[i]);
+        vec3.scale(point_i,pnt.d,(enter[i]-Origin[i])/pnt.d[i]);
         if(isInRect(point_i[j]+Origin[j],point_i[k]+Origin[k],o.origin[j],o.origin[k],height,length)){
-            return {obj:o,dist:pnt.getT(point_i),normal:l_normal};
+            return {obj:o,dist:((enter[i]-Origin[i])/pnt.d[i]),normal:l_normal};
+            //return {obj:o,dist:pnt.getT(point_i),normal:l_normal};
         }
     }
     return false;

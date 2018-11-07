@@ -2,33 +2,60 @@ const STD={
     color:[1,1,1,1],
     difuse:[1,0,0,1],//red
     specular:[1,1,1,1],
-    ambient:[0,0,0,0],
+    ambient:[0.2,0.2,0.2,1],
     color_sphere:[1,0,0,1],//red
     color_box:[0.7,0.7,0,1],//yellow
     origin:auxVec3_create(0,0,0),
     background_color:[0,0,0,1],
     light:[0.8,0.8,0.8,1],
+    specular_coeficient:40,
 };
 
 var printed = 100;
 function phong(scene,obj,point){
-    //começar com difusa símples
-    let l_difuse=undefined;
-    //começar com uma luz
+    let total_color = auxVec3_create(0,0,0);
+
+    //PARA CADA LUZ: DIFUSA E ESPECULAR
+    let l_difuse=vec3.create();
+    let l_specular = vec3.create();
     scene.lights.forEach(
         function(light_elem){
+            //DIFUSA
             let part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_difuse);
             let L = vec3.create();
             vec3.subtract(L,light_elem.origin,point.origin);
-            //console.log("part = "+part+"\nL = "+L);
             vec3.normalize(L,L);
-            vec3.scale(part,part,vec3.dot(point.normal,L));
-            //console.log("part*L = "+part);
-            l_difuse = auxVec3_modulo(part);
+            vec3.scale(part,part,vec3.dot(L,point.normal));
+            vec3.add(l_difuse,l_difuse,part);
+
+            //SPECULAR
+            
+            let l_r = vec3.create();
+            vec3.mul(l_r,L,point.normal);
+            vec3.sub(part,l_r,L);
+            vec3.scaleAndAdd(l_r,L,part,2);
+            vec3.normalize(l_r,l_r);
+            
+            let l_v = vec3.create();
+            vec3.sub(l_v,scene.cameras[0].extr.eye,point.origin);
+            vec3.normalize(l_v,l_v);
+            
+            part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_specular);
+            if(vec3.dot(l_r,l_v)>0){
+                vec3.scale(part,part,vec3.dot(l_r,l_v)**obj.specular_n);
+                vec3.add(l_specular,l_specular,part);
+            }
         }
     );
-    //console.log("l_difuse = "+l_difuse);
-    return l_difuse;
+    vec3.add(total_color,total_color,l_difuse);
+    vec3.add(total_color,total_color,l_specular);
+
+    //AMBIENTE
+    let l_ambient = auxVec3_specialMultiply(scene.color_ambient,obj.color_difuse);
+    vec3.add(total_color,total_color,l_ambient);
+
+
+    return total_color;
 }
 
 const prot_Scene = {
@@ -37,6 +64,7 @@ const prot_Scene = {
     lights:[],
     background_color:STD.background_color,
     color_difuse:STD.background_color,
+    color_ambient:STD.ambient,
     insertCam:function(cam){
         cam.extr.scene = this;
         this.cameras.push(cam);
@@ -50,7 +78,7 @@ const prot_Scene = {
         light.scene = this;
     },
     trace:function(P,Origin,max_t){
-        let obj = {obj:undefined,dist:max_t+1};
+        let obj = {obj:undefined,dist:Infinity};
         this.solids.forEach(function(element){
             let here = element.checkCollision(P,Origin,max_t);
             if(here){//se houve colisão
@@ -65,7 +93,7 @@ const prot_Scene = {
                 }
             }
         });
-        if (obj.dist === max_t+1){//se nãoatingiu nada
+        if (obj.dist === Infinity){//se nãoatingiu nada
             return this.background_color;
         }
         else{
@@ -105,6 +133,7 @@ const prot_Solid = {
     color_difuse:STD.difuse,
     color_specular:STD.specular,
     color_ambient:STD.ambient,
+    specular_n:STD.specular_coeficient,
     checkCollision:function(P,Origin,max_t){
         let t=1;
         return {obj:this,dist:t};
@@ -120,37 +149,37 @@ const prot_Sphere = {
     origin:prot_Solid.origin,
     radius:5,
     color_difuse:STD.color_sphere,
-    color_ambient:prot_Solid.ambient,
-    color_specular:prot_Solid.specular,
+    color_ambient:prot_Solid.color_ambient,
+    color_specular:prot_Solid.color_specular,
+    specular_n:prot_Solid.specular_n,
     checkCollision:function(P,Origin,max_t){
-        //[[TODO]] o erro deve estar aqui, deve estar aparecendo a parte de trás da esfera, na verdade
-        //console.log("P.unit = "+P.unit);
-        let local_a = vec3.dot(P.unit,P.unit);
-        //console.log("local_a = "+local_a);
+        
+        let local_a = vec3.dot(P.d,P.d);
+        
         let partial_1 = vec3.create();
         vec3.sub(partial_1,Origin,this.origin);//(o-c)
         let partial_2 = vec3.create();
-        vec3.scale(partial_2,P.unit,2);
+        vec3.scale(partial_2,P.d,2);
+        
         let local_b = vec3.dot(partial_2,partial_1);
-        //console.log("local_b = "+local_b);
-        let local_c = vec3.dot(partial_1,partial_1)-Math.pow(this.radius,2);
-        //console.log("local_c = "+local_c);
-        let delta = Math.pow(local_b,2) - 4*local_a*local_c;
-        //console.log("delta = "+delta);
+        
+        
+        let local_c = vec3.dot(partial_1,partial_1)-this.radius**2;
+        
+        
+        let delta = local_b**2 - 4*local_a*local_c;
+        
         if(delta<0){
             return false;
-        } else if(delta===0){
-            let t1 = -local_b/(2*local_a);
-            //console.log("t1 = "+t1);
-            let l_normal = vec3.create();
-            vec3.sub(l_normal,P(t1),this.origin);
-            vec3.normalize(l_normal,l_normal);
-            return {obj:this,dist:t1,normal:l_normal};
         }else{
-            let t1 = -local_b-Math.sqrt(delta)/(2*local_a);
-            //console.log("t1 = "+t1);
-            let t2 = -local_b+Math.sqrt(delta)/(2*local_a);
-            //console.log("t2 = "+t2);
+            let t1 = (-local_b-Math.sqrt(delta))/(2*local_a);
+            let t2 = (-local_b+Math.sqrt(delta))/(2*local_a);
+            // if(printed>0){
+            //     //console.log("vec3.length(P.unit) = "+vec3.length(P.unit));
+            //     console.log("min(t1,t2) = "+Math.min(t1,t2));
+            //     console.log("max(t1,t2) = "+Math.max(t1,t2));
+            //     printed--;
+            // }
             let l_normal = vec3.create();
             vec3.sub(l_normal,P(Math.min(t1,t2)),this.origin);
             vec3.normalize(l_normal,l_normal);
@@ -181,8 +210,9 @@ const prot_AlignedBox = {
     height:5,//dy
     length:200,//dz
     color_difuse:STD.color_box,
-    color_ambient:prot_Solid.ambient,
-    color_specular:prot_Solid.specular,
+    color_ambient:prot_Solid.color_ambient,
+    color_specular:prot_Solid.color_specular,
+    specular_n:prot_Solid.specular_n,
     checkCollision:function(pnt,Origin,max_t){
         
         //[[TODO]] detecção de caixas alinhadas aos eixos
@@ -199,13 +229,15 @@ const prot_AlignedBox = {
         }
         //testa em z
         result = testRecCollision(this,pnt,Origin,z,x,y,this.width,this.height);
+        
         return result;
     },
     shade:function(P,t,n){
-        //[[TODO]] shader da caixa
+        //origin é o ponto de interseção com a esfera
         let p = phong(this.scene,this,{origin:P(t),normal:n});
+        
+        //Ajeita num array de pixel
         let c = [p[r],p[g],p[b],1];
-        //c = this.color_difuse;
         return c;
 
     }
