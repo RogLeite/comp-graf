@@ -20,31 +20,57 @@ function phong(scene,obj,point){
     let l_specular = vec3.create();
     scene.lights.forEach(
         function(light_elem){
-            //DIFUSA
-            let part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_difuse);
-            let L = vec3.create();
-            vec3.subtract(L,light_elem.origin,point.origin);
-            vec3.normalize(L,L);
-            vec3.scale(part,part,vec3.dot(L,point.normal));
-            vec3.add(l_difuse,l_difuse,part);
 
-            //SPECULAR
-            
-            let l_r = vec3.create();
-            vec3.mul(l_r,L,point.normal);
-            vec3.sub(part,l_r,L);
-            vec3.scaleAndAdd(l_r,L,part,2);
-            vec3.normalize(l_r,l_r);
-            
-            let l_v = vec3.create();
-            vec3.sub(l_v,scene.cameras[0].extr.eye,point.origin);
-            vec3.normalize(l_v,l_v);
-            
-            part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_specular);
-            if(vec3.dot(l_r,l_v)>0){
-                vec3.scale(part,part,vec3.dot(l_r,l_v)**obj.specular_n);
-                vec3.add(l_specular,l_specular,part);
-            }
+            // let p=function(){
+            //     let d=vec3.create();
+            //     vec3.sub(d,light_elem.origin,point.origin);
+            //     vec3.normalize(d,d);
+
+            //     let obj = this;
+            //     let P = function (t){
+            //         let temp = vec3.create();
+            //         vec3.scale(temp,d,t);
+            //         vec3.add(temp,temp,point.origin);
+            //         return temp;
+            //     };
+            //     P.unit = vec3.create();
+            //     vec3.normalize(P.unit,d);
+            //     P.d = d;
+            //     P.getT = function(p){
+            //         return vec3.length(p)/vec3.length(this.d);
+            //     };
+            //     return P;
+            // }();
+            // let temp_origin = vec3.create();
+            // vec3.scaleAndAdd(temp_origin,point.origin,p.unit,0.5);
+            // let intersect = scene.trace(p,temp_origin,Infinity);
+            // if(!intersect){
+                //DIFUSA
+                let part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_difuse);
+                let L = vec3.create();
+                vec3.subtract(L,light_elem.origin,point.origin);
+                vec3.normalize(L,L);
+                vec3.scale(part,part,vec3.dot(L,point.normal));
+                vec3.add(l_difuse,l_difuse,part);
+
+                //SPECULAR
+                
+                let l_v = vec3.create();
+                vec3.sub(l_v,scene.cameras[0].extr.eye,point.origin);
+                vec3.normalize(l_v,l_v);
+                
+
+                let l_r = vec3.create();
+                vec3.scale(l_r,point.normal,vec3.dot(l_v,point.origin)*2);
+                vec3.sub(l_r,l_r,l_v);
+                vec3.normalize(l_r,l_r);
+                
+                part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_specular);
+                if(vec3.dot(l_r,l_v)>0){
+                    vec3.scale(part,part,vec3.dot(l_r,L)**obj.specular_n);
+                    vec3.add(l_specular,l_specular,part);
+                }
+            //}
         }
     );
     vec3.add(total_color,total_color,l_difuse);
@@ -94,7 +120,7 @@ const prot_Scene = {
             }
         });
         if (obj.dist === Infinity){//se nãoatingiu nada
-            return this.background_color;
+            return undefined;
         }
         else{
             return obj.obj.shade(P,obj.dist,obj.normal);

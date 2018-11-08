@@ -96,6 +96,9 @@ var prot_Camera = {
             for(let j=0;j<this.intr.h;j++){
                 let P = this.makeP(i,j);
                 let pixel = scene.trace(P,this.extr.eye,this.intr.far);
+                if (!pixel){
+                    pixel = scene.background_color;
+                }
                 // if(pixel!==scene.background_color){
                 //     console.log("pixel = "+pixel);
                 // }
