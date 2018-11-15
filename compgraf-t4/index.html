@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>INF1761 - WebGL - Aula 1</title>
+  <script src="objects.js"></script>
+</head>
+<body onload="onLoad()">
+  <canvas id="canvas" style="background-color: black" width="800" height="600"></canvas>
+
+  <!--A versao precisa esta nessa posicao para evitar erros.-->
+  <script id="vertexShaderSrc" type="notjs">#version 300 es
+
+    in vec3 vertexPos;
+    in vec3 color;
+    uniform mat4 mvp;
+
+    out vec3 colorv;
+
+    void main() {
+      colorv = color;
+      gl_Position = mvp * vec4(vertexPos,1.0);
+    }
+
+  </script>
+  <!--A versao precisa esta nessa posicao para evitar erros.-->
+  <script id="fragmentShaderSrc" type="notjs">#version 300 es
+    precision mediump float;
+
+    in vec3 colorv;
+	//a saida do fragment eh sempre um vec4
+    out vec4 color;
+
+    void main(void) {
+        color = vec4(colorv, 1.0);
+    }
+
+  </script>
+
+
+  <script src="gl-matrix-min.js"></script>
+  <script src="rendering.js"></script>
+</body>
+</html>
