@@ -16,7 +16,7 @@ var simple_cube = new Cube();
 var view, proj;
 
 //solidos em cena
-var solids = [];
+var solids;
 
 function onLoad(){
 
@@ -121,10 +121,17 @@ function initScene(){
     mat4.lookAt(view, eye, center, up);
     mat4.perspective(proj, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
-    //Criar o objeto
+    //Criar a classe cubo e cria instâncias desse
     Cube.create(gl);
+    for( let x = -5; x <= 5; x+=5 )
+    {
+        for( let z = -5; z <= 5; z+=5)
+        {
+            let temp_cube = new Cube([x,0,z]);
+            //solids.push(temp_cube); //[[TODO]] entender pq aqui tá dando ruim
+        }
+    }
 
-    
     
 }
 
