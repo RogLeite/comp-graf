@@ -15,6 +15,9 @@ var simple_cube = new Cube();
 //Matrizes de transformacao.
 var view, proj;
 
+//solidos em cena
+var solids = [];
+
 function onLoad(){
 
     //Inicializar o contexto WebGL
@@ -120,6 +123,9 @@ function initScene(){
 
     //Criar o objeto
     Cube.create(gl);
+
+    
+    
 }
 
 
@@ -135,6 +141,7 @@ function redraw(){
     
     //Desenhar os cubos em diferentes posições
     Cube.bindVertexArray(gl);
+
     for( let x = -5; x <= 5; x+=5 )
     {
         for( let z = -5; z <= 5; z+=5)
