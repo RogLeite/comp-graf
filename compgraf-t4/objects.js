@@ -1,3 +1,15 @@
+const STD={
+    color:[1,1,1,1],
+    difuse:[1,0,0,1],//red
+    specular:[1,1,1,1],
+    ambient:[0.2,0.2,0.2,1],
+    color_sphere:[1,0,0,1],//red
+    color_box:[0.7,0.7,0,1],//yellow
+    origin:auxVec3_create(0,0,0),
+    background_color:[0,0,0,1],
+    light:[0.8,0.8,0.8,1],
+    specular_coeficient:40,
+};
 
 var prot_Cube = {
     model:mat4.create(),
@@ -94,3 +106,14 @@ Cube.create = function(gl){
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
 };
+
+const prot_Light = {
+    name:"prot_Light",
+    scene:undefined,
+    origin:STD.origin,
+    RGB_intensity:STD.light,
+};
+function class_Light(){
+    
+}
+class_Light.prototype = prot_Light;

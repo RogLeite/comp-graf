@@ -8,15 +8,12 @@ var gl;
 var program;
 
 //Encapsula um conjunto de definicoes sobre um objeto.
-var vao_Cube;
-
-var simple_cube = new Cube();
 
 //Matrizes de transformacao.
 var view, proj;
 
 //solidos em cena
-var solids;
+var solids = [];
 
 function onLoad(){
 
@@ -121,6 +118,15 @@ function initScene(){
     mat4.lookAt(view, eye, center, up);
     mat4.perspective(proj, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
 
+
+    var light1 = new class_Light()
+    light1.name = "light1";
+    light1.origin = auxVec3_create(60,120,50);
+    light1.RGB_intensity = [0.8,0.8,0.8,1];
+    //[[TODO]] - Implementar a Luz
+
+    solids = [];
+
     //Criar a classe cubo e cria instâncias desse
     Cube.create(gl);
     for( let x = -5; x <= 5; x+=5 )
@@ -128,7 +134,7 @@ function initScene(){
         for( let z = -5; z <= 5; z+=5)
         {
             let temp_cube = new Cube([x,0,z]);
-            //solids.push(temp_cube); //[[TODO]] entender pq aqui tá dando ruim
+            solids.push(temp_cube);
         }
     }
 
@@ -157,6 +163,17 @@ function redraw(){
             temp_cube.draw(gl,view,proj);
         }
     }
+    console.log("solids: "+solids);
+/*     for(let i=0;i<solids.length;i++){
+        solids[i].draw(gl,view,proj);
+    }
+ */
+    /* solids.forEach(
+        function (elem){
+            elem.draw(gl,view,proj);
+            return true;
+        }
+    ); */
 
     //Desabilitar buffers habilitados
     gl.bindVertexArray(null);
