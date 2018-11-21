@@ -39,3 +39,17 @@ function testRecCollision(o,pnt,Origin,i,j,k,height,length){
     return false;
 
 }
+
+
+function auxCreateArrayBuffer(gl,buffer,atribute,atrPos){
+    //Criar VBO para cores, linkar e copiar os dados
+    buffer = gl.createBuffer();
+    //Define buffer como corrente.
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    //Aloca buffer e copia dados.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(atribute), gl.STATIC_DRAW);
+    //Habilita atributo desejado do vertice.
+    gl.enableVertexAttribArray(atrPos);
+    //Diz que os atributos estao no buffer corrente.
+    gl.vertexAttribPointer(atrPos,atribute.size,gl.FLOAT,false,0,0);
+}

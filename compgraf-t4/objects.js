@@ -78,6 +78,11 @@ Cube.create = function(gl){
     gl.bindVertexArray(this.vao);
 
     //Criar VBO dos vertices, linkar e copiar os dados
+    this.vertexVBO = undefined;
+    auxCreateArrayBuffer(gl,this.vertexVBO,this.vertices,program.vertexPosAttr);
+
+    /* 
+    //Criar VBO dos vertices, linkar e copiar os dados
     this.vertexVBO = gl.createBuffer();
     //Define buffer como corrente.
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexVBO);
@@ -87,7 +92,12 @@ Cube.create = function(gl){
     gl.enableVertexAttribArray(program.vertexPosAttr);
     //Diz que os atributos estao no buffer corrente.
     gl.vertexAttribPointer(program.vertexPosAttr,this.vertices.size,gl.FLOAT,false,0,0);
-
+ */
+    //Criar VBO para cores, linkar e copiar os dados
+    this.vboColor = undefined;
+    auxCreateArrayBuffer(gl,this.vboColor,this.color,program.vertexColorAttr);
+        
+    /* 
     //Criar VBO para cores, linkar e copiar os dados
     this.vboColor = gl.createBuffer();
     //Define buffer como corrente.
@@ -98,7 +108,7 @@ Cube.create = function(gl){
     gl.enableVertexAttribArray(program.vertexColorAttr);
     //Diz que os atributos estao no buffer corrente.
     gl.vertexAttribPointer(program.vertexColorAttr,this.color.size,gl.FLOAT,false,0,0);
-
+ */
     //Criar EBO, linkar e copiar os dados
     this.EBO = gl.createBuffer();
     //Define o buffer como corrente e o define como buffer de elementos.
