@@ -47,7 +47,7 @@ Cube.vertices = [
     -1.0, -1.0, -1.0,
     +1.0, -1.0, -1.0
     ];
-
+Cube.vertices.size = 3;
 Cube.indices = [
     0, 1, 2,
     2, 1, 3,
@@ -72,6 +72,7 @@ Cube.color = [
     1.0, 0.0, 0.0,
     1.0, 0.0, 0.0
     ];
+Cube.color.size = 3;
 Cube.create = function(gl){
     this.vao = gl.createVertexArray();
     gl.bindVertexArray(this.vao);
@@ -85,7 +86,7 @@ Cube.create = function(gl){
     //Habilita atributo desejado do vertice.
     gl.enableVertexAttribArray(program.vertexPosAttr);
     //Diz que os atributos estao no buffer corrente.
-    gl.vertexAttribPointer(program.vertexPosAttr,3,gl.FLOAT,false,0,0);
+    gl.vertexAttribPointer(program.vertexPosAttr,this.vertices.size,gl.FLOAT,false,0,0);
 
     //Criar VBO para cores, linkar e copiar os dados
     this.vboColor = gl.createBuffer();
@@ -96,7 +97,7 @@ Cube.create = function(gl){
     //Habilita atributo desejado do vertice.
     gl.enableVertexAttribArray(program.vertexColorAttr);
     //Diz que os atributos estao no buffer corrente.
-    gl.vertexAttribPointer(program.vertexColorAttr,3,gl.FLOAT,false,0,0);
+    gl.vertexAttribPointer(program.vertexColorAttr,this.color.size,gl.FLOAT,false,0,0);
 
     //Criar EBO, linkar e copiar os dados
     this.EBO = gl.createBuffer();

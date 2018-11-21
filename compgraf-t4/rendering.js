@@ -163,7 +163,6 @@ function redraw(){
             temp_cube.draw(gl,view,proj);
         }
     }
-    console.log("solids: "+solids);
 /*     for(let i=0;i<solids.length;i++){
         solids[i].draw(gl,view,proj);
     }
