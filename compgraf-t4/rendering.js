@@ -104,6 +104,7 @@ function initProgram(){
     program.vertexPosAttr = gl.getAttribLocation(program,"vertexPos");
     program.mvpUniform = gl.getUniformLocation(program, "mvp");
     program.vertexColorAttr = gl.getAttribLocation(program, "color");
+    program.vertexNormalAttr = gl.getAttribLocation(program, "normal");
 }
 
 function initScene(){
@@ -150,8 +151,12 @@ function redraw(){
     //Definir tamanho e limpar a janela
     gl.viewport(0,0,gl.viewportWidth,gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
-    
+    /* 
+    let testvector = auxVec3_create(1,1,1);
+    vec3.normalize(testvector,testvector);
+    console.log("testvector: "+testvector);
+    console.log("testvector[x] * 3**1/2= "+testvector[0]*(3**(1/2)));
+    console.log("testvector.length"+vec3.length(testvector)); */
     //Desenhar os cubos em diferentes posições
     Cube.bindVertexArray(gl);
 

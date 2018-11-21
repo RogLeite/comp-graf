@@ -14,11 +14,14 @@
     
     in vec3 vertexPos;
     in vec3 color;
+    in vec3 normal;
     uniform mat4 mvp;
     
     out vec3 colorv;
+    out vec3 normalv;
 
     void main() {
+      normalv = normal;
       colorv = color;
       gl_Position = mvp * vec4(vertexPos,1.0);
     }
@@ -28,6 +31,7 @@
   <script id="fragmentShaderSrc" type="notjs">#version 300 es
     precision mediump float;
 
+    in vec3 normalv;
     in vec3 colorv;
     //a saida do fragment eh sempre um vec4
     out vec4 color;

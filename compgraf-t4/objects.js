@@ -10,7 +10,7 @@ const STD={
     light:[0.8,0.8,0.8,1],
     specular_coeficient:40,
 };
-
+const n_comp = 3**(-1/2);//componentof the normalized (1,1,1) vector
 var prot_Cube = {
     model:mat4.create(),
     makeModel:function(translation){
@@ -46,8 +46,29 @@ Cube.vertices = [
     +1.0, +1.0, -1.0,
     -1.0, -1.0, -1.0,
     +1.0, -1.0, -1.0
-    ];
+];
 Cube.vertices.size = 3;
+Cube.color = [
+    1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0
+    ];
+Cube.color.size = 3;
+Cube.normals = [
+    -n_comp, -n_comp, +n_comp,
+    +n_comp, -n_comp, +n_comp,
+    -n_comp, +n_comp, +n_comp,
+    +n_comp, +n_comp, +n_comp,
+    -n_comp, +n_comp, -n_comp,
+    +n_comp, +n_comp, -n_comp,
+    -n_comp, -n_comp, -n_comp,
+    +n_comp, -n_comp, -n_comp
+];
 Cube.indices = [
     0, 1, 2,
     2, 1, 3,
@@ -62,17 +83,6 @@ Cube.indices = [
     6, 0, 4,
     4, 0, 2
     ];
-Cube.color = [
-    1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0
-    ];
-Cube.color.size = 3;
 Cube.create = function(gl){
     this.vao = gl.createVertexArray();
     gl.bindVertexArray(this.vao);
@@ -109,6 +119,11 @@ Cube.create = function(gl){
     //Diz que os atributos estao no buffer corrente.
     gl.vertexAttribPointer(program.vertexColorAttr,this.color.size,gl.FLOAT,false,0,0);
  */
+
+    //Criar VBO para normais, linkar e copiar os dados
+    this.vboNormal = undefined;
+    auxCreateArrayBuffer(gl,this.vboNormal,this.normals,program.vertexNormalAttr);
+        
     //Criar EBO, linkar e copiar os dados
     this.EBO = gl.createBuffer();
     //Define o buffer como corrente e o define como buffer de elementos.
