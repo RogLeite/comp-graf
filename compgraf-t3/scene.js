@@ -21,30 +21,6 @@ function phong(scene,obj,point){
     scene.lights.forEach(
         function(light_elem){
 
-            // let p=function(){
-            //     let d=vec3.create();
-            //     vec3.sub(d,light_elem.origin,point.origin);
-            //     vec3.normalize(d,d);
-
-            //     let obj = this;
-            //     let P = function (t){
-            //         let temp = vec3.create();
-            //         vec3.scale(temp,d,t);
-            //         vec3.add(temp,temp,point.origin);
-            //         return temp;
-            //     };
-            //     P.unit = vec3.create();
-            //     vec3.normalize(P.unit,d);
-            //     P.d = d;
-            //     P.getT = function(p){
-            //         return vec3.length(p)/vec3.length(this.d);
-            //     };
-            //     return P;
-            // }();
-            // let temp_origin = vec3.create();
-            // vec3.scaleAndAdd(temp_origin,point.origin,p.unit,0.5);
-            // let intersect = scene.trace(p,temp_origin,Infinity);
-            // if(!intersect){
                 //DIFUSA
                 let part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_difuse);
                 let L = vec3.create();
@@ -70,7 +46,6 @@ function phong(scene,obj,point){
                     vec3.scale(part,part,vec3.dot(l_r,L)**obj.specular_n);
                     vec3.add(l_specular,l_specular,part);
                 }
-            //}
         }
     );
     vec3.add(total_color,total_color,l_difuse);

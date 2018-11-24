@@ -15,8 +15,11 @@
     in vec3 vertexPos;
     in vec3 color;
     in vec3 normal;
+
     uniform mat4 mvp;
-    
+    uniform vec3 lightpos;
+    uniform vec3 lightval;
+
     out vec3 colorv;
     out vec3 normalv;
 
@@ -27,12 +30,43 @@
     }
     
   </script>
+  <script id="vertexLightingShaderSrc" type="notjs">#version 300 es
+    
+    in vec3 vertexPos;
+    in vec3 color;
+    in vec3 normal;
+
+    uniform mat4 mvp;
+    uniform vec3 lightpos;
+    uniform vec3 lightval;
+
+    out vec3 colorv;
+    out vec3 normalv;
+
+    void main() {
+
+
+      //DIFUSA
+      colorv = vec3(lightval[0]*color[0],lightval[1]*color[1],lightval[2]*color[2]);
+      vec3 L = normalize(lightpos-vertexPos);
+      //colorv = colorv * dot(L,normal);//[[TODO]]
+      //vec3.add(l_difuse,l_difuse,part);
+
+      normalv = normal;
+      gl_Position = mvp * vec4(vertexPos,1.0);
+    }
+    
+  </script>
   <!--A versao precisa esta nessa posicao para evitar erros.-->
   <script id="fragmentShaderSrc" type="notjs">#version 300 es
     precision mediump float;
+    uniform vec3 flightpos;
+    uniform vec3 flightval;
+    uniform mat4 vp;
 
-    in vec3 normalv;
     in vec3 colorv;
+    in vec3 normalv;
+
     //a saida do fragment eh sempre um vec4
     out vec4 color;
     
@@ -41,7 +75,23 @@
     }
     
   </script>
-  
+  <script id="fragmentLightingShaderSrc" type="notjs">#version 300 es
+    precision mediump float;
+    uniform vec3 flightpos;
+    uniform vec3 flightval;
+    uniform mat4 vp;
+
+    in vec3 colorv;
+    in vec3 normalv;
+
+    //a saida do fragment eh sempre um vec4
+    out vec4 color;
+    
+    void main(void) {
+      color = vec4(colorv, 1.0);
+    }
+    
+  </script>  
 
   <script src="gl-matrix-min.js"></script>
   <script src="auxiliar.js"></script>

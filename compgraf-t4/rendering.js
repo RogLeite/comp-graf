@@ -15,6 +15,9 @@ var view, proj;
 //solidos em cena
 var solids = [];
 
+//lights emcena
+var lights = [];
+
 function onLoad(){
 
     //Inicializar o contexto WebGL
@@ -81,7 +84,7 @@ function createShader(shaderSource, shaderType){
 	
 function initProgram(){
     //Criar e compilar os shaders
-    var vertexShaderSrc = document.getElementById("vertexShaderSrc").text;
+    var vertexShaderSrc = document.getElementById("vertexLightingShaderSrc").text;
     var fragmentShaderSrc = document.getElementById("fragmentShaderSrc").text;
     var vertexShader = createShader(vertexShaderSrc,gl.VERTEX_SHADER);
     var fragmentShader = createShader(fragmentShaderSrc,gl.FRAGMENT_SHADER);
@@ -103,8 +106,13 @@ function initProgram(){
     //Criar propriedades no programa guardando uniformes e atributos para uso posterior
     program.vertexPosAttr = gl.getAttribLocation(program,"vertexPos");
     program.mvpUniform = gl.getUniformLocation(program, "mvp");
+    program.lightPosUniform = gl.getUniformLocation(program, "lightpos");
+    program.flightPosUniform = gl.getUniformLocation(program, "flightpos");
+    program.lightValUniform = gl.getUniformLocation(program, "lightval");
+    program.flightValUniform = gl.getUniformLocation(program, "flightval");
     program.vertexColorAttr = gl.getAttribLocation(program, "color");
     program.vertexNormalAttr = gl.getAttribLocation(program, "normal");
+    program.vpUniform = gl.getUniformLocation(program,"vp");
 }
 
 function initScene(){
@@ -122,8 +130,9 @@ function initScene(){
 
     var light1 = new class_Light()
     light1.name = "light1";
-    light1.origin = auxVec3_create(60,120,50);
-    light1.RGB_intensity = [0.8,0.8,0.8,1];
+    light1.origin = [60.0,120.0,50.0];
+    light1.RGB_intensity = [0.8,0.8,0.8];
+    lights.push(light1);
     //[[TODO]] - Implementar a Luz
 
     solids = [];
@@ -151,6 +160,14 @@ function redraw(){
     //Definir tamanho e limpar a janela
     gl.viewport(0,0,gl.viewportWidth,gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    gl.uniform3fv(program.lightPosUniform,lights[0].origin);
+    gl.uniform3fv(program.flightPosUniform,lights[0].origin);
+    gl.uniform3fv(program.lightValUniform,lights[0].RGB_intensity);
+    gl.uniform3fv(program.flightValUniform,lights[0].RGB_intensity);
+    let vp = mat4.create();
+    mat4.multiply(vp,proj,view);
+    gl.uniformMatrix4fv(program.vpUniform,false,vp);
     /* 
     let testvector = auxVec3_create(1,1,1);
     vec3.normalize(testvector,testvector);
