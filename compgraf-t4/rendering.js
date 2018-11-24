@@ -105,14 +105,16 @@ function initProgram(){
 
     //Criar propriedades no programa guardando uniformes e atributos para uso posterior
     program.vertexPosAttr = gl.getAttribLocation(program,"vertexPos");
+    program.vertexColorAttr = gl.getAttribLocation(program, "color");
+    program.vertexNormalAttr = gl.getAttribLocation(program, "vertexNormal");
+    console.log("vertexnormal index = "+program.vertexNormalAttr);
     program.mvpUniform = gl.getUniformLocation(program, "mvp");
     program.lightPosUniform = gl.getUniformLocation(program, "lightpos");
     program.flightPosUniform = gl.getUniformLocation(program, "flightpos");
     program.lightValUniform = gl.getUniformLocation(program, "lightval");
     program.flightValUniform = gl.getUniformLocation(program, "flightval");
-    program.vertexColorAttr = gl.getAttribLocation(program, "color");
-    program.vertexNormalAttr = gl.getAttribLocation(program, "normal");
     program.vpUniform = gl.getUniformLocation(program,"vp");
+    program.modelUniform = gl.getUniformLocation(program,"model");
 }
 
 function initScene(){
@@ -165,6 +167,7 @@ function redraw(){
     gl.uniform3fv(program.flightPosUniform,lights[0].origin);
     gl.uniform3fv(program.lightValUniform,lights[0].RGB_intensity);
     gl.uniform3fv(program.flightValUniform,lights[0].RGB_intensity);
+    
     let vp = mat4.create();
     mat4.multiply(vp,proj,view);
     gl.uniformMatrix4fv(program.vpUniform,false,vp);

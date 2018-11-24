@@ -22,6 +22,8 @@ var prot_Cube = {
         mat4.multiply(mvp,view,this.model);
         mat4.multiply(mvp,proj,mvp);
         gl.uniformMatrix4fv(program.mvpUniform, false, mvp);
+        gl.uniformMatrix4fv(program.modelUniform,false,this.model);
+        
         //Desenhar
         gl.drawElements(gl.TRIANGLES, Cube.indices.length, gl.UNSIGNED_SHORT, 0);
     },
