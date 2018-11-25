@@ -13,9 +13,14 @@ const STD={
 const n_comp = 3**(-1/2);//componentof the normalized (1,1,1) vector
 var prot_Cube = {
     model:mat4.create(),
-    makeModel:function(translation){
+    makeModel:function(translation,rotation,scaling){
         mat4.identity(this.model);
-        mat4.translate(this.model,this.model,translation);
+        if(rotation&&scaling){
+            mat4.fromRotationTranslationScale(this.model, rotation, translation, scaling);
+        }
+        else{
+            mat4.translate(this.model,this.model,translation);
+        }
     },
     draw:function(gl,view,proj){
         let mvp = mat4.create();
@@ -28,8 +33,14 @@ var prot_Cube = {
         gl.drawElements(gl.TRIANGLES, Cube.indices.length, gl.UNSIGNED_SHORT, 0);
     },
 };
+/* 
 function Cube(translation){
     this.makeModel(translation);
+    
+}
+ */
+function Cube(translation,rotation,scaling){
+    this.makeModel(translation,rotation,scaling);
     
 }
 Cube.prototype = prot_Cube;

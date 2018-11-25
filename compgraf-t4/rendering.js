@@ -7,6 +7,10 @@ var gl;
 //Um programa (conjunto de shaders) para ser executado na placa
 var program;
 
+var program_vertex_light;
+var program_fragment_light;
+
+
 //Encapsula um conjunto de definicoes sobre um objeto.
 
 //Matrizes de transformacao.
@@ -18,13 +22,39 @@ var solids = [];
 //lights emcena
 var lights = [];
 
+//modo de iluminação
+const vertex_lighting = "Troca para Fragment Lighting";
+const fragment_lighting = "Troca para Vertex Lighting";
+var mode = vertex_lighting;
+function onClick(event){
+
+	//alert("Mode Toggled");
+	if(mode === vertex_lighting){
+        mode = fragment_lighting;
+        event.target.innerText = fragment_lighting;
+        program = program_fragment_light;
+	}else if(mode === fragment_lighting){
+        mode = vertex_lighting;
+        event.target.innerText = vertex_lighting;
+        program = program_vertex_light;
+	}
+    gl.useProgram(program);
+    initScene();
+    redraw();
+}
+
 function onLoad(){
 
     //Inicializar o contexto WebGL
     initGL();
 
     //Criar um programa (conjunto de shaders) WebGL
-    initProgram();
+    initProgram("vertexShaderSrc","fragmentLightingShaderSrc");
+    program_fragment_light = program;
+    
+    initProgram("vertexLightingShaderSrc","fragmentShaderSrc");
+    program_vertex_light = program;
+    
 
     //Inicializar a cena
     initScene();
@@ -82,10 +112,10 @@ function createShader(shaderSource, shaderType){
 }
 
 	
-function initProgram(){
+function initProgram(vertexname,fragname){
     //Criar e compilar os shaders
-    var vertexShaderSrc = document.getElementById("vertexLightingShaderSrc").text;
-    var fragmentShaderSrc = document.getElementById("fragmentShaderSrc").text;
+    var vertexShaderSrc = document.getElementById(vertexname).text;
+    var fragmentShaderSrc = document.getElementById(fragname).text;
     var vertexShader = createShader(vertexShaderSrc,gl.VERTEX_SHADER);
     var fragmentShader = createShader(fragmentShaderSrc,gl.FRAGMENT_SHADER);
 
@@ -104,10 +134,12 @@ function initProgram(){
     gl.useProgram(program);
 
     //Criar propriedades no programa guardando uniformes e atributos para uso posterior
-    program.vertexPosAttr = gl.getAttribLocation(program,"vertexPos");
-    program.vertexColorAttr = gl.getAttribLocation(program, "color");
-    program.vertexNormalAttr = gl.getAttribLocation(program, "vertexNormal");
+    program.vertexNormalAttr = gl.getAttribLocation(program,"vertexNormal");
     console.log("vertexnormal index = "+program.vertexNormalAttr);
+    program.vertexPosAttr = gl.getAttribLocation(program,"vertexPos");
+    //console.log("vertexPos index = "+program.vertexPosAttr);
+    program.vertexColorAttr = gl.getAttribLocation(program, "color");
+    //console.log("vertexColor index = "+program.vertexColorAttr);
     program.mvpUniform = gl.getUniformLocation(program, "mvp");
     program.lightPosUniform = gl.getUniformLocation(program, "lightpos");
     program.flightPosUniform = gl.getUniformLocation(program, "flightpos");
@@ -141,6 +173,7 @@ function initScene(){
 
     //Criar a classe cubo e cria instâncias desse
     Cube.create(gl);
+    /* 
     for( let x = -5; x <= 5; x+=5 )
     {
         for( let z = -5; z <= 5; z+=5)
@@ -149,7 +182,7 @@ function initScene(){
             solids.push(temp_cube);
         }
     }
-
+ */
     
 }
 
@@ -184,7 +217,8 @@ function redraw(){
     {
         for( let z = -5; z <= 5; z+=5)
         {
-            let temp_cube = new Cube([x,0,z]);
+            let q = quat.create();
+            let temp_cube = new Cube([x,0,z],quat.fromEuler(q,0,49,20),[1.2,1,1]);
             temp_cube.draw(gl,view,proj);
         }
     }

@@ -48,8 +48,8 @@ function auxCreateArrayBuffer(gl,buffer,atribute,atrPos){
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     //Aloca buffer e copia dados.
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(atribute), gl.STATIC_DRAW);
-    //Habilita atributo desejado do vertice.
-    gl.enableVertexAttribArray(atrPos);
     //Diz que os atributos estao no buffer corrente.
     gl.vertexAttribPointer(atrPos,atribute.size,gl.FLOAT,false,0,0);
+    //Habilita atributo desejado do vertice.
+    gl.enableVertexAttribArray(atrPos);
 }

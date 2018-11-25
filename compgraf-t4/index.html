@@ -7,6 +7,9 @@
   <title>INF1761 - WebGL - Aula 1</title>
 </head>
 <body onload="onLoad()">
+  <section>
+    <button onclick="onClick(event)">Troca para Fragment Lighting</button>
+  </section>
   <canvas id="canvas" style="background-color: black" width="800" height="600"></canvas>
   
   <!--A versao precisa esta nessa posicao para evitar erros.-->
@@ -49,9 +52,9 @@
   </script>  
   <script id="vertexLightingShaderSrc" type="notjs">#version 300 es
     
+    in vec3 vertexNormal;
     in vec3 vertexPos;
     in vec3 color;
-    in vec3 vertexNormal;
 
 
     uniform mat4 model;
