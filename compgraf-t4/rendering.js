@@ -22,6 +22,18 @@ var solids = [];
 //lights emcena
 var lights = [];
 
+
+
+//Posições da câmera
+var eye = [-10,10,-10];
+var center = [0,0,0];
+var up = [0,1,0];
+
+var ambient = vec3.fromValues(0.2,0.2,0.2);
+var specular = vec3.fromValues(1,1,1);
+var specularn = 40.0//float
+
+
 //modo de iluminação
 const vertex_lighting = "Troca para Fragment Lighting";
 const fragment_lighting = "Troca para Vertex Lighting";
@@ -144,17 +156,14 @@ function initProgram(vertexname,fragname){
     program.vpUniform = gl.getUniformLocation(program,"vp");
     program.mvpUniform = gl.getUniformLocation(program, "mvp");
     program.lightPosUniform = gl.getUniformLocation(program, "lightpos");
-    program.flightPosUniform = gl.getUniformLocation(program, "flightpos");
     program.lightValUniform = gl.getUniformLocation(program, "lightval");
-    program.flightValUniform = gl.getUniformLocation(program, "flightval");
+    program.ambientUniform = gl.getUniformLocation(program, "ambient");
+    program.eyeUniform = gl.getUniformLocation(program, "eye");
+    program.specularUniform = gl.getUniformLocation(program, "specular");
+    program.specularnUniform = gl.getUniformLocation(program, "specularn");
 }
 
 function initScene(){
-    //Posições da câmera
-    var eye = [-10,10,-10];
-    var center = [0,0,0];
-    var up = [0,1,0];
-
     //Definir as matrizes de view e projection
     view = mat4.create();
     proj = mat4.create();
@@ -164,10 +173,9 @@ function initScene(){
 
     var light1 = new class_Light()
     light1.name = "light1";
-    light1.origin = [60.0,120.0,50.0];
-    light1.RGB_intensity = [0.8,0.8,0.8];
+    light1.origin = [30.0,120.0,-25.0];
+    light1.RGB_intensity = [0.9,0.9,0.9];
     lights.push(light1);
-    //[[TODO]] - Implementar a Luz
 
     solids = [];
 
@@ -200,6 +208,10 @@ function redraw(){
     gl.uniform3fv(program.flightPosUniform,lights[0].origin);
     gl.uniform3fv(program.lightValUniform,lights[0].RGB_intensity);
     gl.uniform3fv(program.flightValUniform,lights[0].RGB_intensity);
+    gl.uniform3fv(program.ambientUniform,ambient);
+    gl.uniform3fv(program.eyeUniform,eye);
+    gl.uniform3fv(program.specularUniform,specular);
+    gl.uniform1f(program.specularnUniform,specularn);
     
     let vp = mat4.create();
     mat4.multiply(vp,proj,view);

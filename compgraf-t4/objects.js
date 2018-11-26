@@ -166,6 +166,7 @@ Cube.normals = [
     +1.0,0.0,0.0,//34
     +1.0,0.0,0.0,//35
 ];
+Cube.normals.size = 3;
 Cube.indices = [
     0, 5, 9,//normais 0.0,0.0,+1.0,
     10, 6, 13,//normais[0,0,+1.0]
