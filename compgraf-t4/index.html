@@ -17,7 +17,7 @@
     
     in vec3 vertexPos;
     in vec3 color;
-    in vec3 normal;
+    in vec3 vertexNormal;
 
     uniform mat4 mvp;
     uniform vec3 lightpos;
@@ -27,7 +27,7 @@
     out vec3 normalv;
 
     void main() {
-      normalv = normal;
+      normalv = vertexNormal;
       colorv = color;
       gl_Position = mvp * vec4(vertexPos,1.0);
     }
@@ -55,13 +55,16 @@
     in vec3 vertexNormal;
     in vec3 vertexPos;
     in vec3 color;
-
-
+    
     uniform mat4 model;
     uniform mat4 mvp;
-
+    
     uniform vec3 lightpos;
     uniform vec3 lightval;
+    //uniform float specularn;
+    //uniform vec3 specular;
+    //uniform vec3 ambient;
+    //uniform vec3 eye;
 
     out vec3 colorv;
     out vec4 normalv;
@@ -72,17 +75,43 @@
       gl_Position = model * vec4(vertexPos,1.0);
       
       //DIFUSA
-      colorv = vec3(lightval[0]*color[0],lightval[1]*color[1],lightval[2]*color[2]);
+      vec3 tempColor = vec3(lightval[0]*color[0],lightval[1]*color[1],lightval[2]*color[2]);
       
       vec4 L = normalize(vec4(lightpos,1.0)-gl_Position);
       
-      
+      vec3 sacanagem = vertexNormal*vertexPos;
       normalv = vec4(vertexNormal,1.0);
 
-      //colorv = colorv * dot(L,normalv);//[[TODO]]
+      colorv = tempColor;
+      //colorv = tempColor * dot(L,normalv);//Adiciona DIFUSA
       
-      //vec3.add(l_difuse,l_difuse,part);
+      //SPECULAR
+      
+      //vec3 l_v = eye-vec3(gl_Position);
+      //l_v normalize(l_v);
 
+      //vec3 l_r = vertexNormal * dot(l_v,vec3(gl_Position)) * 2;
+      //vec3.scale(l_r,point.normal,vec3.dot(l_v,point.origin)*2);
+
+      //l_r = l_r - l_v;
+      //vec3.sub(l_r,l_r,l_v);
+
+      //l_r = normalize(l_r);
+      //vec3.normalize(l_r,l_r);
+      //
+      //vec3 tempColor = vec3(lightval[0]*specular[0],lightval[1]*specular[1],lightval[2]*specular[2]);
+      //part = auxVec3_specialMultiply(light_elem.RGB_intensity,obj.color_specular);
+      //if(dot(l_r,l_v)>0){
+      //    tempColor = tempColor*pow(dot(l_r,L),specularn));
+      //    colorv = colorv + tempColor;
+      //  }
+
+
+      //AMBIENTE
+      //tempColor = vec3(ambient[0]*color[0],ambient[1]*color[1],ambient[2]*color[2]);
+      //colorv = colorv + tempColor;
+  
+      
       gl_Position = mvp * vec4(vertexPos,1.0);
     }
     

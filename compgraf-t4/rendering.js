@@ -134,19 +134,19 @@ function initProgram(vertexname,fragname){
     gl.useProgram(program);
 
     //Criar propriedades no programa guardando uniformes e atributos para uso posterior
-    program.vertexNormalAttr = gl.getAttribLocation(program,"vertexNormal");
-    console.log("vertexnormal index = "+program.vertexNormalAttr);
     program.vertexPosAttr = gl.getAttribLocation(program,"vertexPos");
-    //console.log("vertexPos index = "+program.vertexPosAttr);
+    console.log("vertexPos index = "+program.vertexPosAttr);
     program.vertexColorAttr = gl.getAttribLocation(program, "color");
     //console.log("vertexColor index = "+program.vertexColorAttr);
+    program.vertexNormalAttr = gl.getAttribLocation(program,"vertexNormal");
+    console.log("vertexnormal index = "+program.vertexNormalAttr);
+    program.modelUniform = gl.getUniformLocation(program,"model");
+    program.vpUniform = gl.getUniformLocation(program,"vp");
     program.mvpUniform = gl.getUniformLocation(program, "mvp");
     program.lightPosUniform = gl.getUniformLocation(program, "lightpos");
     program.flightPosUniform = gl.getUniformLocation(program, "flightpos");
     program.lightValUniform = gl.getUniformLocation(program, "lightval");
     program.flightValUniform = gl.getUniformLocation(program, "flightval");
-    program.vpUniform = gl.getUniformLocation(program,"vp");
-    program.modelUniform = gl.getUniformLocation(program,"model");
 }
 
 function initScene(){
